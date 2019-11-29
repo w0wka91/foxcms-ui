@@ -2,21 +2,30 @@
   "name": "foxcms-ui",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
-    "@types/jest": "24.0.12",
-    "@types/node": "11.13.8",
-    "@types/react": "16.8.15",
-    "@types/react-dom": "16.8.4",
+    "@apollo/react-hooks": "^3.0.1",
+    "@emotion/core": "^10.0.14",
+    "@reach/router": "^1.2.1",
+    "apollo-boost": "^0.4.4",
+    "dayjs": "^1.8.14",
+    "emotion": "^10.0.14",
+    "graphql": "^14.4.2",
+    "pluralize": "^8.0.0",
     "react": "^16.8.6",
+    "react-atomicus": "../react-atomicus/react-atomicus-0.0.0-development.tgz",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.0",
-    "typescript": "3.4.5"
+    "react-hook-form": "^3.28.4",
+    "react-scripts": "3.2.0",
+    "react-simplemde-editor": "^4.1.0",
+    "typescript": "3.5.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "apollo:generate": "apollo codegen:generate --includes=src/**/* --endpoint http://localhost:8080/graphql --target typescript --outputFlat src/generated"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -32,5 +41,16 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.15",
+    "@types/node": "12.0.12",
+    "@types/pluralize": "^0.0.29",
+    "@types/reach__router": "^1.2.4",
+    "@types/react": "16.8.23",
+    "@types/react-dom": "16.8.4",
+    "@types/react-router-dom": "^4.3.4",
+    "@types/react-select": "^3.0.0",
+    "apollo": "^2.17.4"
   }
 }

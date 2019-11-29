@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import React, { useEffect, useState } from 'react'
+import AuthenticatedApp from './AuthenticatedApp'
+import UnauthenticatedApp from './UnauthenticatedApp'
+import { useDataApi } from './hooks/useDataApi'
 
 const App: React.FC = () => {
+  const [user, setUser] = useState<User>()
+  const [{ data, isLoading }] = useDataApi<User>('/user')
+
+  useEffect(() => {
+      setUser(data)
+    },
+    [data],
+  )
+  if (isLoading) return null
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      {user && user.username ?
+        <AuthenticatedApp/> :
+        <UnauthenticatedApp onSuccessfulLogin={(user: User) => setUser(user)}/>}
+    </>
+  )
 }
 
-export default App;
+export default App
