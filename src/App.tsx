@@ -1,7 +1,7 @@
 import './App.css'
 import React, { useEffect, useState } from 'react'
-import AuthenticatedApp from './AuthenticatedApp'
-import UnauthenticatedApp from './UnauthenticatedApp'
+import AuthenticatedApp from './components/AuthenticatedApp'
+import UnauthenticatedApp from './components/UnauthenticatedApp'
 import { useDataApi } from './hooks/useDataApi'
 
 const App: React.FC = () => {
@@ -9,16 +9,16 @@ const App: React.FC = () => {
   const [{ data, isLoading }] = useDataApi<User>('/user')
 
   useEffect(() => {
-      setUser(data)
-    },
-    [data],
-  )
+    setUser(data)
+  }, [data])
   if (isLoading) return null
   return (
     <>
-      {user && user.username ?
-        <AuthenticatedApp/> :
-        <UnauthenticatedApp onSuccessfulLogin={(user: User) => setUser(user)}/>}
+      {user && user.username ? (
+        <AuthenticatedApp />
+      ) : (
+        <UnauthenticatedApp onSuccessfulLogin={(user: User) => setUser(user)} />
+      )}
     </>
   )
 }
