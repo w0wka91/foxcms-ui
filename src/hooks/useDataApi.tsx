@@ -2,10 +2,10 @@ import { useEffect, useReducer, useState } from 'react'
 
 type Action<T> =
   | { type: 'FETCH_INIT' }
-  | { type: 'FETCH_SUCCESS', payload: T }
-  | { type: 'FETCH_FAILURE' };
+  | { type: 'FETCH_SUCCESS'; payload: T }
+  | { type: 'FETCH_FAILURE' }
 
-const dataFetchReducer = <T, >(state: T, action: Action<T>) => {
+const dataFetchReducer = <T,>(state: T, action: Action<T>) => {
   switch (action.type) {
     case 'FETCH_INIT':
       return { ...state, isLoading: true, isError: false }
@@ -33,7 +33,10 @@ interface State<T> {
   data: T
 }
 
-const useDataApi = <T, >(initialUrl: string, initialData?: T | undefined): [State<T>, (url: string) => void] => {
+const useDataApi = <T,>(
+  initialUrl: string,
+  initialData?: T | undefined
+): [any, (url: string) => void] => {
   const [url, setUrl] = useState(initialUrl)
 
   const [state, dispatch] = useReducer(dataFetchReducer, {

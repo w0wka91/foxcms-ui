@@ -1,7 +1,7 @@
 import { css } from 'emotion'
 import React from 'react'
 import { colors, Card, Button, Icon } from 'react-atomicus'
-import { RouteComponentProps, Router, navigate } from '@reach/router'
+import { RouteComponentProps, Router, navigate, Redirect } from '@reach/router'
 import PageHeader from './PageHeader'
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
@@ -9,6 +9,8 @@ import Table from './Table/Table'
 import { Projects } from '../generated/Projects'
 import 'dayjs/locale/en'
 import Dayjs from 'dayjs'
+import { Project } from '../generated/Project'
+import { ModelOverview } from '../pages/model_overview/ModelOverview'
 
 Dayjs.locale('en')
 
@@ -40,7 +42,7 @@ const AuthenticatedApp: React.FC<RouteComponentProps> = () => {
         `}
       >
         <ProjectList path="/" />
-        <Project path=":project/:branch/*" />
+        <ProjectPage path=":project/:branch/*" />
       </Router>
     </div>
   )
@@ -101,28 +103,30 @@ let ProjectList: React.FC<RouteComponentProps> = () => {
               <Table.HeaderCell>Last update</Table.HeaderCell>
               <Table.HeaderCell />
             </Table.Header>
-            {data.projects.map(project => (
-              <Table.Row
-                key={project.id}
-                title="Enter project"
-                onClick={() =>
-                  navigate(
-                    `${project.generatedName}/${project.branches[0].name}`
-                  )
-                }
-              >
-                <Table.Cell>{project.name}</Table.Cell>
-                <Table.Cell>{project.branches.length}</Table.Cell>
-                <Table.Cell>
-                  {Dayjs(project.updatedAt)
-                    .locale('en')
-                    .format('MMMM DD, hh:mm A')}
-                </Table.Cell>
-                <Table.Cell>
-                  <Icon name="corner-up-right" />
-                </Table.Cell>
-              </Table.Row>
-            ))}
+            <tbody>
+              {data.projects.map(project => (
+                <Table.Row
+                  key={project.id}
+                  title="Enter project"
+                  onClick={() =>
+                    navigate(
+                      `${project.generatedName}/${project.branches[0].name}`
+                    )
+                  }
+                >
+                  <Table.Cell>{project.name}</Table.Cell>
+                  <Table.Cell>{project.branches.length}</Table.Cell>
+                  <Table.Cell>
+                    {Dayjs(project.updatedAt)
+                      .locale('en')
+                      .format('MMMM DD, hh:mm A')}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Icon name="corner-up-right" />
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </tbody>
           </Table>
         )}
       </Card>
@@ -135,13 +139,30 @@ interface ProjectProps {
   branch: string
 }
 
-let Project: React.FC<RouteComponentProps<ProjectProps>> = ({
+const PROJECT = gql`
+  query Project($generatedName: String!) {
+    project(generatedName: $generatedName) {
+      id
+      name
+      generatedName
+      branches {
+        id
+        name
+      }
+    }
+  }
+`
+
+let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
   project,
   branch,
 }) => {
-  if (project == null || branch == null) {
-    navigate('/')
-  }
+  const { data, loading } = useQuery<Project>(PROJECT, {
+    variables: { generatedName: project },
+  })
+  const branchId = data?.project?.branches.find(b => b.name === branch)?.id
+  if (loading) return null
+  if (!loading && !branchId) return <h1>Redirect to ...</h1>
   return (
     <>
       <div
@@ -160,7 +181,9 @@ let Project: React.FC<RouteComponentProps<ProjectProps>> = ({
             padding-bottom: 3.2rem;
           `}
         >
-          {project}/{branch}
+          <Router>
+            <ModelOverview path="/models" branchId={branchId} />
+          </Router>
         </main>
       </div>
       <div
