@@ -1,7 +1,7 @@
 import { css } from 'emotion'
 import React from 'react'
 import { colors, Card, Button, Icon } from 'react-atomicus'
-import { RouteComponentProps, Router, navigate, Redirect } from '@reach/router'
+import { RouteComponentProps, Router, navigate } from '@reach/router'
 import PageHeader from './PageHeader'
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
@@ -11,6 +11,7 @@ import 'dayjs/locale/en'
 import Dayjs from 'dayjs'
 import { Project } from '../generated/Project'
 import { ModelOverview } from '../pages/model_overview/ModelOverview'
+import { ModelDetail } from '../pages/model_detail/ModelDetail'
 
 Dayjs.locale('en')
 
@@ -183,6 +184,7 @@ let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
         >
           <Router>
             <ModelOverview path="/models" branchId={branchId} />
+            <ModelDetail path="/models/:modelId" branchId={branchId} />
           </Router>
         </main>
       </div>

@@ -1,9 +1,9 @@
-import { RouteComponentProps } from '@reach/router'
+import { RouteComponentProps, navigate } from '@reach/router'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import PageHeader from '../../components/PageHeader'
-import { Button, Card, Icon } from 'react-atomicus'
+import { Button, Card, Icon, colors } from 'react-atomicus'
 import { ContentModels } from '../../generated/ContentModels'
 import { css } from 'emotion'
 import Table from '../../components/Table/Table'
@@ -19,6 +19,12 @@ const CONTENT_MODELS = gql`
       updatedAt
       fields {
         name
+        apiName
+        ... on ScalarField {
+          type
+          concern
+          constraint
+        }
       }
     }
   }
@@ -55,7 +61,6 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
           <Table>
             <Table.Header>
               <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>API</Table.HeaderCell>
               <Table.HeaderCell>Fields</Table.HeaderCell>
               <Table.HeaderCell>Description</Table.HeaderCell>
               <Table.HeaderCell>Last update</Table.HeaderCell>
@@ -65,11 +70,27 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
               {data.contentModels.map(contentModel => (
                 <Table.Row
                   key={contentModel.id}
-                  title="Enter project"
-                  onClick={() => alert('')}
+                  onClick={() => navigate(`./models/${contentModel.id}`)}
                 >
-                  <Table.Cell>{contentModel.name}</Table.Cell>
-                  <Table.Cell>{contentModel.apiName}</Table.Cell>
+                  <Table.Cell>
+                    <span
+                      className={css`
+                        display: flex;
+                        flex-direction: column;
+                        font-weight: 600;
+                      `}
+                    >
+                      {contentModel.name}
+                      <span
+                        className={css`
+                          color: ${colors.grey300};
+                          font-size: 1.4rem;
+                        `}
+                      >
+                        {contentModel.apiName}
+                      </span>
+                    </span>
+                  </Table.Cell>
                   <Table.Cell>{contentModel.fields.length}</Table.Cell>
                   <Table.Cell
                     className={css`
