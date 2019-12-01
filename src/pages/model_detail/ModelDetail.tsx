@@ -31,6 +31,7 @@ const CONTENT_MODEL = gql`
         ... on RelationField {
           relationType: type
           relatesTo {
+            id
             name
           }
         }

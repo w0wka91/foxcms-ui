@@ -1,5 +1,5 @@
 import React from 'react'
-import { shadows, colors, Icon } from 'react-atomicus'
+import { shadows, colors, Icon, Button } from 'react-atomicus'
 import { css } from 'emotion'
 import {
   fieldName,
@@ -10,6 +10,7 @@ import {
 } from './field-utils'
 import CircleButton from '../../components/CircleButton'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
+import { navigate } from '@reach/router'
 
 interface FieldRowProps {
   field: Field
@@ -67,7 +68,19 @@ const FieldRow: React.FC<FieldRowProps> = ({ field }) => {
           `}
           name={fieldIcon(field)}
         />
-        {fieldName(field)}
+        {field.__typename === 'RelationField' ? (
+          <Button
+            className={css`
+              padding: 0;
+            `}
+            onClick={() => navigate(`./${field.relatesTo.id}`)}
+            hierarchy="tertiary"
+          >
+            {fieldName(field)}
+          </Button>
+        ) : (
+          fieldName(field)
+        )}
       </span>
       <span
         className={css`

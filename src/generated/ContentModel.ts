@@ -32,6 +32,7 @@ export interface ContentModel_contentModel_fields_ListField {
 
 export interface ContentModel_contentModel_fields_RelationField_relatesTo {
   __typename: "ContentModel";
+  id: string;
   name: string;
 }
 
