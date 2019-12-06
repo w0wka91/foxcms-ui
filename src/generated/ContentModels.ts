@@ -8,8 +8,8 @@ import { DisplayType, Concern, Constraint } from "./globalTypes";
 // GraphQL query operation: ContentModels
 // ====================================================
 
-export interface ContentModels_contentModels_fields_RelationField {
-  __typename: "RelationField" | "CreatedAtField" | "IdField" | "ListField" | "PublishStatusField" | "UpdatedAtField";
+export interface ContentModels_contentModels_fields_ListField {
+  __typename: "ListField" | "RelationField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
 }
@@ -23,7 +23,7 @@ export interface ContentModels_contentModels_fields_ScalarField {
   constraint: Constraint;
 }
 
-export type ContentModels_contentModels_fields = ContentModels_contentModels_fields_RelationField | ContentModels_contentModels_fields_ScalarField;
+export type ContentModels_contentModels_fields = ContentModels_contentModels_fields_ListField | ContentModels_contentModels_fields_ScalarField;
 
 export interface ContentModels_contentModels {
   __typename: "ContentModel";

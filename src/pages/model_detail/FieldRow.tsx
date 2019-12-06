@@ -1,22 +1,18 @@
 import React from 'react'
-import { shadows, colors, Icon, Button } from 'react-atomicus'
+import { Button, colors, Icon, shadows } from 'react-atomicus'
 import { css } from 'emotion'
-import {
-  fieldName,
-  isSystemField,
-  fieldIcon,
-  fieldInfoTop,
-  fieldInfoBottom,
-} from './field-utils'
+import { fieldIcon, fieldInfoBottom, fieldInfoTop, fieldName, isSystemField } from './field-utils'
 import CircleButton from '../../components/CircleButton'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
 import { navigate } from '@reach/router'
 
 interface FieldRowProps {
   field: Field
+  onEdit: (field: Field) => void
+  onDelete: (field: Field) => void
 }
 
-const FieldRow: React.FC<FieldRowProps> = ({ field }) => {
+const FieldRow: React.FC<FieldRowProps> = ({ field, onEdit, onDelete }) => {
   return (
     <div
       key={field.apiName}
@@ -114,7 +110,7 @@ const FieldRow: React.FC<FieldRowProps> = ({ field }) => {
           <>
             <CircleButton
               icon="minus"
-              onClick={() => alert('delete')}
+              onClick={() => onDelete(field)}
               className={css`
                 color: ${colors.red300};
                 &:hover:enabled {
@@ -123,7 +119,8 @@ const FieldRow: React.FC<FieldRowProps> = ({ field }) => {
               `}
             />
             <CircleButton
-              icon="edit"
+              icon="edit-2"
+              onClick={() => onEdit(field)}
               className={css`
                 color: ${colors.grey600};
                 &:hover:enabled {

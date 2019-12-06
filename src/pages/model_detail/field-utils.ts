@@ -1,9 +1,4 @@
-import {
-  DisplayType,
-  Concern,
-  Constraint,
-  RelationType,
-} from '../../generated/globalTypes'
+import { Concern, Constraint, DisplayType, RelationType } from '../../generated/globalTypes'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
 
 const fieldName = (field: Field) => {
@@ -117,6 +112,7 @@ const fieldInfoBottom = (field: Field) => {
         case RelationType.MANY_TO_MANY:
           return 'Many to many'
       }
+      break
     case 'ListField':
       return 'List field'
     default:
