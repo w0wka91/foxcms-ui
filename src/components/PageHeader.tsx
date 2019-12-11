@@ -1,15 +1,15 @@
 import React, { PropsWithChildren } from 'react'
 import { css } from 'emotion'
-import { fontSizes, colors } from 'react-atomicus'
+import { colors, fontSizes } from 'react-atomicus'
 
 interface Props {
   title: string
 }
 
 const PageHeader: React.FC<PropsWithChildren<Props>> = ({
-  children,
-  title,
-}: PropsWithChildren<Props>) => {
+                                                          children,
+                                                          title,
+                                                        }: PropsWithChildren<Props>) => {
   return (
     <div
       className={css`

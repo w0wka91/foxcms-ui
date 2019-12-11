@@ -18,6 +18,7 @@ export interface ContentModel_contentModel_fields_ScalarField {
   __typename: "ScalarField";
   name: string;
   apiName: string;
+  id: string;
   type: DisplayType;
   concern: Concern;
   constraint: Constraint;
@@ -27,6 +28,7 @@ export interface ContentModel_contentModel_fields_ListField {
   __typename: "ListField";
   name: string;
   apiName: string;
+  id: string;
   type: DisplayType;
 }
 
@@ -40,6 +42,7 @@ export interface ContentModel_contentModel_fields_RelationField {
   __typename: "RelationField";
   name: string;
   apiName: string;
+  id: string;
   relationType: RelationType;
   relatesTo: ContentModel_contentModel_fields_RelationField_relatesTo;
 }

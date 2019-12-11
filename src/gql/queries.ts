@@ -15,9 +15,11 @@ const CONTENT_MODEL = gql`
                     ...ScalarFieldParts
                 }
                 ... on ListField {
+                    id
                     type
                 }
                 ... on RelationField {
+                    id
                     relationType: type
                     relatesTo {
                         id

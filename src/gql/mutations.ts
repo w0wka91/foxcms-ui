@@ -24,4 +24,11 @@ const ADD_SCALAR_FIELD = gql`
     ${SCALAR_FIELD_FRAGMENT}
 `
 
-export { ADD_SCALAR_FIELD }
+const DELETE_FIELD = gql`
+    mutation DeleteField(
+        $modelId: ID!,
+        $fieldId: ID!) {
+        deleteField(modelId: $modelId, id: $fieldId)
+    }
+`
+export { ADD_SCALAR_FIELD, DELETE_FIELD }

@@ -25,7 +25,7 @@ fetch(`http://localhost:8080/graphql`, {
   .then(result => {
     // here we're filtering out any type information unrelated to unions or interfaces
     const filteredData = result.data.__schema.types.filter(
-      type => type.possibleTypes !== null
+      type => type.possibleTypes !== null,
     )
     result.data.__schema.types = filteredData
     fs.writeFile(
@@ -37,6 +37,6 @@ fetch(`http://localhost:8080/graphql`, {
         } else {
           console.log('Fragment types successfully extracted!')
         }
-      }
+      },
     )
   })

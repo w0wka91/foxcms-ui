@@ -3,9 +3,9 @@ import { css, cx } from 'emotion'
 import { colors } from 'react-atomicus'
 
 const Table = ({
-  children,
-  className,
-}: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
+                 children,
+                 className,
+               }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
     <table
       className={cx(
@@ -15,7 +15,7 @@ const Table = ({
           border-radius: 3px;
           width: 100%;
         `,
-        className
+        className,
       )}
     >
       {children}
@@ -39,14 +39,14 @@ Table.Row = ({ children, ...rest }: React.HTMLProps<HTMLTableRowElement>) => (
 
 Table.Header = ({ children }: PropsWithChildren<{}>) => (
   <thead>
-    <tr>{children}</tr>
+  <tr>{children}</tr>
   </thead>
 )
 
 Table.HeaderCell = ({
-  children,
-  ...rest
-}: React.HTMLProps<HTMLTableHeaderCellElement>) => (
+                      children,
+                      ...rest
+                    }: React.HTMLProps<HTMLTableHeaderCellElement>) => (
   <th
     className={css`
       padding: 1.6rem 3.2rem;
@@ -65,10 +65,10 @@ Table.HeaderCell = ({
 Table.Body = ({ children }: PropsWithChildren<{}>) => <tbody>{children}</tbody>
 
 Table.Cell = ({
-  children,
-  className,
-  ...rest
-}: React.HTMLProps<HTMLTableDataCellElement>) => (
+                children,
+                className,
+                ...rest
+              }: React.HTMLProps<HTMLTableDataCellElement>) => (
   <td
     className={cx(
       css`
@@ -78,7 +78,7 @@ Table.Cell = ({
         font-family: inherit;
         color: ${colors.grey700};
       `,
-      className
+      className,
     )}
     {...rest}
   >

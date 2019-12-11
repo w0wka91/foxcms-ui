@@ -1,7 +1,7 @@
 import { css } from 'emotion'
 import React from 'react'
-import { colors, Card, Button, Icon } from 'react-atomicus'
-import { RouteComponentProps, Router, navigate } from '@reach/router'
+import { Button, Card, colors, Icon } from 'react-atomicus'
+import { navigate, RouteComponentProps, Router } from '@reach/router'
 import PageHeader from './PageHeader'
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
@@ -42,26 +42,26 @@ const AuthenticatedApp: React.FC<RouteComponentProps> = () => {
           background: url('https://www.toptal.com/designers/subtlepatterns/patterns/dust_scratches.png');
         `}
       >
-        <ProjectList path="/" />
-        <ProjectPage path=":project/:branch/*" />
+        <ProjectList path="/"/>
+        <ProjectPage path=":project/:branch/*"/>
       </Router>
     </div>
   )
 }
 
 const PROJECTS = gql`
-  query Projects {
-    projects {
-      id
-      name
-      generatedName
-      updatedAt
-      branches {
-        id
-        name
-      }
+    query Projects {
+        projects {
+            id
+            name
+            generatedName
+            updatedAt
+            branches {
+                id
+                name
+            }
+        }
     }
-  }
 `
 
 let ProjectList: React.FC<RouteComponentProps> = () => {
@@ -85,7 +85,7 @@ let ProjectList: React.FC<RouteComponentProps> = () => {
       >
         <PageHeader title="Projects">
           <Button>
-            <Button.Icon name="plus" />
+            <Button.Icon name="plus"/>
             <span>Create project</span>
           </Button>
         </PageHeader>
@@ -102,31 +102,31 @@ let ProjectList: React.FC<RouteComponentProps> = () => {
               <Table.HeaderCell>Name</Table.HeaderCell>
               <Table.HeaderCell>Branches</Table.HeaderCell>
               <Table.HeaderCell>Last update</Table.HeaderCell>
-              <Table.HeaderCell />
+              <Table.HeaderCell/>
             </Table.Header>
             <tbody>
-              {data.projects.map(project => (
-                <Table.Row
-                  key={project.id}
-                  title="Enter project"
-                  onClick={() =>
-                    navigate(
-                      `${project.generatedName}/${project.branches[0].name}`
-                    )
-                  }
-                >
-                  <Table.Cell>{project.name}</Table.Cell>
-                  <Table.Cell>{project.branches.length}</Table.Cell>
-                  <Table.Cell>
-                    {Dayjs(project.updatedAt)
-                      .locale('en')
-                      .format('MMMM DD, hh:mm A')}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Icon name="corner-up-right" />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+            {data.projects.map(project => (
+              <Table.Row
+                key={project.id}
+                title="Enter project"
+                onClick={() =>
+                  navigate(
+                    `${project.generatedName}/${project.branches[0].name}`,
+                  )
+                }
+              >
+                <Table.Cell>{project.name}</Table.Cell>
+                <Table.Cell>{project.branches.length}</Table.Cell>
+                <Table.Cell>
+                  {Dayjs(project.updatedAt)
+                    .locale('en')
+                    .format('MMMM DD, hh:mm A')}
+                </Table.Cell>
+                <Table.Cell>
+                  <Icon name="corner-up-right"/>
+                </Table.Cell>
+              </Table.Row>
+            ))}
             </tbody>
           </Table>
         )}
@@ -141,23 +141,23 @@ interface ProjectProps {
 }
 
 const PROJECT = gql`
-  query Project($generatedName: String!) {
-    project(generatedName: $generatedName) {
-      id
-      name
-      generatedName
-      branches {
-        id
-        name
-      }
+    query Project($generatedName: String!) {
+        project(generatedName: $generatedName) {
+            id
+            name
+            generatedName
+            branches {
+                id
+                name
+            }
+        }
     }
-  }
 `
 
 let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
-  project,
-  branch,
-}) => {
+                                                                  project,
+                                                                  branch,
+                                                                }) => {
   const { data, loading } = useQuery<Project>(PROJECT, {
     variables: { generatedName: project },
   })
@@ -183,8 +183,8 @@ let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
           `}
         >
           <Router>
-            <ModelOverview path="/models" branchId={branchId} />
-            <ModelDetail path="/models/:modelId" branchId={branchId} />
+            <ModelOverview path="/models" branchId={branchId}/>
+            <ModelDetail path="/models/:modelId" branchId={branchId}/>
           </Router>
         </main>
       </div>

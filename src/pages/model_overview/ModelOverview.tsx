@@ -1,33 +1,33 @@
-import { RouteComponentProps, navigate } from '@reach/router'
+import { navigate, RouteComponentProps } from '@reach/router'
 import gql from 'graphql-tag'
 import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import PageHeader from '../../components/PageHeader'
-import { Button, Card, Icon, colors } from 'react-atomicus'
+import { Button, Card, colors, Icon } from 'react-atomicus'
 import { ContentModels } from '../../generated/ContentModels'
 import { css } from 'emotion'
 import Table from '../../components/Table/Table'
 import Dayjs from 'dayjs'
 
 const CONTENT_MODELS = gql`
-  query ContentModels($branchId: ID!) {
-    contentModels(branchId: $branchId) {
-      id
-      apiName
-      name
-      description
-      updatedAt
-      fields {
-        name
-        apiName
-        ... on ScalarField {
-          type
-          concern
-          constraint
+    query ContentModels($branchId: ID!) {
+        contentModels(branchId: $branchId) {
+            id
+            apiName
+            name
+            description
+            updatedAt
+            fields {
+                name
+                apiName
+                ... on ScalarField {
+                    type
+                    concern
+                    constraint
+                }
+            }
         }
-      }
     }
-  }
 `
 
 interface ModelOverviewProps extends RouteComponentProps {
@@ -47,7 +47,7 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
     >
       <PageHeader title="Content models">
         <Button size="large" onClick={() => alert('')}>
-          <Button.Icon name="plus" />
+          <Button.Icon name="plus"/>
           <span>Create model</span>
         </Button>
       </PageHeader>
@@ -64,15 +64,15 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
               <Table.HeaderCell>Fields</Table.HeaderCell>
               <Table.HeaderCell>Description</Table.HeaderCell>
               <Table.HeaderCell>Last update</Table.HeaderCell>
-              <Table.HeaderCell />
+              <Table.HeaderCell/>
             </Table.Header>
             <tbody>
-              {data.contentModels.map(contentModel => (
-                <Table.Row
-                  key={contentModel.id}
-                  onClick={() => navigate(`./models/${contentModel.id}`)}
-                >
-                  <Table.Cell>
+            {data.contentModels.map(contentModel => (
+              <Table.Row
+                key={contentModel.id}
+                onClick={() => navigate(`./models/${contentModel.id}`)}
+              >
+                <Table.Cell>
                     <span
                       className={css`
                         display: flex;
@@ -90,25 +90,25 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
                         {contentModel.apiName}
                       </span>
                     </span>
-                  </Table.Cell>
-                  <Table.Cell>{contentModel.fields.length}</Table.Cell>
-                  <Table.Cell
-                    className={css`
+                </Table.Cell>
+                <Table.Cell>{contentModel.fields.length}</Table.Cell>
+                <Table.Cell
+                  className={css`
                       max-width: 25.6em;
                     `}
-                  >
-                    {contentModel.description}
-                  </Table.Cell>
-                  <Table.Cell>
-                    {Dayjs(contentModel.updatedAt)
-                      .locale('en')
-                      .format('MMMM DD, hh:mm A')}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Icon name="corner-up-right" />
-                  </Table.Cell>
-                </Table.Row>
-              ))}
+                >
+                  {contentModel.description}
+                </Table.Cell>
+                <Table.Cell>
+                  {Dayjs(contentModel.updatedAt)
+                    .locale('en')
+                    .format('MMMM DD, hh:mm A')}
+                </Table.Cell>
+                <Table.Cell>
+                  <Icon name="corner-up-right"/>
+                </Table.Cell>
+              </Table.Row>
+            ))}
             </tbody>
           </Table>
         )}

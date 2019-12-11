@@ -5,7 +5,7 @@ type Action<T> =
   | { type: 'FETCH_SUCCESS'; payload: T }
   | { type: 'FETCH_FAILURE' }
 
-const dataFetchReducer = <T,>(state: T, action: Action<T>) => {
+const dataFetchReducer = <T, >(state: T, action: Action<T>) => {
   switch (action.type) {
     case 'FETCH_INIT':
       return { ...state, isLoading: true, isError: false }
@@ -33,9 +33,9 @@ interface State<T> {
   data: T
 }
 
-const useDataApi = <T,>(
+const useDataApi = <T, >(
   initialUrl: string,
-  initialData?: T | undefined
+  initialData?: T | undefined,
 ): [any, (url: string) => void] => {
   const [url, setUrl] = useState(initialUrl)
 

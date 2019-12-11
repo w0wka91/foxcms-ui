@@ -1,1 +1,33 @@
-{"__schema":{"types":[{"kind":"INTERFACE","name":"Field","possibleTypes":[{"name":"RelationField"},{"name":"IdField"},{"name":"UpdatedAtField"},{"name":"CreatedAtField"},{"name":"PublishStatusField"},{"name":"ScalarField"},{"name":"ListField"}]}]}}
+{
+  "__schema": {
+    "types": [
+      {
+        "kind": "INTERFACE",
+        "name": "Field",
+        "possibleTypes": [
+          {
+            "name": "RelationField"
+          },
+          {
+            "name": "IdField"
+          },
+          {
+            "name": "UpdatedAtField"
+          },
+          {
+            "name": "CreatedAtField"
+          },
+          {
+            "name": "PublishStatusField"
+          },
+          {
+            "name": "ScalarField"
+          },
+          {
+            "name": "ListField"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -5,28 +5,15 @@
 import { DisplayType, Concern, Constraint } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AddScalarField
+// GraphQL fragment: ScalarFieldParts
 // ====================================================
 
-export interface AddScalarField_addScalarField {
+export interface ScalarFieldParts {
   __typename: "ScalarField";
   id: string;
   name: string;
   apiName: string;
   type: DisplayType;
-  concern: Concern;
-  constraint: Constraint;
-}
-
-export interface AddScalarField {
-  addScalarField: AddScalarField_addScalarField;
-}
-
-export interface AddScalarFieldVariables {
-  modelId: string;
-  fieldName: string;
-  apiName: string;
-  displayType: DisplayType;
   concern: Concern;
   constraint: Constraint;
 }

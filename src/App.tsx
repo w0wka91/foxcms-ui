@@ -15,9 +15,9 @@ const App: React.FC = () => {
   return (
     <>
       {user && user.username ? (
-        <AuthenticatedApp />
+        <AuthenticatedApp/>
       ) : (
-        <UnauthenticatedApp onSuccessfulLogin={(user: User) => setUser(user)} />
+        <UnauthenticatedApp onSuccessfulLogin={(user: User) => setUser(user)}/>
       )}
     </>
   )
