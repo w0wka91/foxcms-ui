@@ -1,11 +1,11 @@
 import React from 'react'
-import { Button, colors, Icon, shadows } from 'react-atomicus'
+import { colors, Icon, shadows } from 'react-atomicus'
 import { css } from 'emotion'
 import { fieldIcon, fieldInfoBottom, fieldInfoTop, fieldName } from './field-utils'
-import CircleButton from '../../components/CircleButton'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
-import { navigate } from '@reach/router'
 import { isSystemField, UserField } from '../../types/foxcms.global'
+import { Link } from '@reach/router'
+import CircleButton from '../../components/CircleButton'
 
 interface FieldRowProps {
   field: Field
@@ -66,15 +66,21 @@ const FieldRow: React.FC<FieldRowProps> = ({ field, onEdit, onDelete }) => {
           name={fieldIcon(field)}
         />
         {field.__typename === 'RelationField' ? (
-          <Button
+          <Link
             className={css`
-              padding: 0;
+              text-decoration: none;
+              color: ${colors.blue700};
+              &:visited {
+                color: ${colors.blue700};
+              }
+              &:hover {
+                text-decoration: underline;
+              }
             `}
-            onClick={() => navigate(`./${field.relatesTo.id}`)}
-            hierarchy="tertiary"
+            to={`../${field.relatesTo.id}`}
           >
             {fieldName(field)}
-          </Button>
+          </Link>
         ) : (
           fieldName(field)
         )}
