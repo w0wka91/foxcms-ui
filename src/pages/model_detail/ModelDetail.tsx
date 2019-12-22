@@ -1,119 +1,121 @@
 import { RouteComponentProps } from '@reach/router'
-import React, { useState } from 'react'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import React, { useReducer } from 'react'
+import { useQuery } from '@apollo/react-hooks'
 import PageHeader from '../../components/PageHeader'
-import { Button, colors, Dropdown, Modal } from 'react-atomicus'
+import { Dropdown } from 'react-atomicus'
 import { css } from 'emotion'
-import {
-  ContentModel,
-  ContentModel_contentModel_fields as Field,
-  ContentModel_contentModel_fields_ListField as ListField,
-  ContentModel_contentModel_fields_ScalarField as ScalarField,
-} from '../../generated/ContentModel'
+import { ContentModel } from '../../generated/ContentModel'
 import { DisplayType } from '../../generated/globalTypes'
 import { typeIcon } from './field-utils'
 import { FieldRow } from './FieldRow'
-import { ScalarFieldDialog } from './ScalarFieldDialog'
-import { NewField } from '../../types/NewField'
+import { ScalarFieldModal } from './ScalarFieldModal'
 import { CONTENT_MODEL } from '../../gql/queries'
-import { DELETE_FIELD } from '../../gql/mutations'
-
-const isSystemField = (field: Field) =>
-  field.__typename === 'ScalarField' || field.__typename === 'ListField' || field.__typename === 'RelationField'
-
-interface DeleteField {
-  modelId?: string
-  fieldId?: string
-}
-
-interface DeleteFieldDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  field?: DeleteField
-}
-
-const DeleteFieldDialog: React.FC<DeleteFieldDialogProps> = ({ isOpen, onClose, field }) => {
-  const [deleteField] = useMutation(DELETE_FIELD, {
-    variables: {
-      modelId: field?.modelId,
-      fieldId: field?.fieldId,
-    },
-    update(cache, { data: { deleteField } }) {
-      const data = cache.readQuery<ContentModel>({ query: CONTENT_MODEL, variables: { modelId: field?.modelId } })
-      const fields = data?.contentModel
-        ?.fields
-        ?.filter(field => field.__typename === 'ScalarField' || field.__typename === 'ListField' || field.__typename === 'RelationField')
-        ?.filter(field => field.id)
-      cache.writeQuery({
-        query: CONTENT_MODEL,
-        variables: { modelId: contentModel.id },
-        data: { contentModel: { ...data?.contentModel, fields } },
-      })
-    },
-  })
-  return (
-    <Modal onClose={onClose} open={isOpen}>
-      <Modal.Header>Delete field</Modal.Header>
-      <Modal.Content>
-        <p
-          className={css`
-            width: 51.2rem;
-            font-color: ${colors.grey800};
-        `}>
-          By removing this field you will delete <b>ALL</b> content associated with it. Are you sure you want to
-          proceed?
-        </p>
-      </Modal.Content>
-      <Modal.Footer>
-        <Button
-          type="button"
-          onClick={async () => {
-            await deleteField()
-            onClose()
-          }}
-          intent="danger">
-          Delete
-        </Button>
-        <Button
-          type="button"
-          hierarchy="tertiary"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  )
-}
+import {
+  FieldSkeleton,
+  isListField,
+  isScalarField,
+  ListField,
+  ScalarField,
+  UserField,
+} from '../../types/foxcms.global'
+import { DeleteFieldModal } from './DeleteFieldModal'
 
 interface ModelDetailProps extends RouteComponentProps {
   branchId?: string
   modelId?: string
 }
 
+type Action =
+  { type: 'create-field', displayType: DisplayType }
+  | { type: 'edit-scalar-field', field: ScalarField | ListField }
+  | { type: 'delete-field', field: UserField, modelId?: string }
+  | { type: 'close-modal', modal: 'CREATE_EDIT' | 'DELETE_FIELD' }
+type State = {
+  scalarFieldForm: {
+    isVisible: boolean,
+    field: ScalarField | ListField | FieldSkeleton,
+  }
+  deleteFieldModal: {
+    isVisible: boolean,
+    field?: UserField
+  }
+}
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'create-field':
+      return {
+        ...state,
+        scalarFieldForm: {
+          isVisible: true,
+          field: { type: action.displayType },
+        },
+      }
+    case 'edit-scalar-field':
+      return {
+        ...state,
+        scalarFieldForm: {
+          isVisible: true,
+          field: action.field,
+        },
+      }
+    case 'delete-field':
+      return {
+        ...state,
+        deleteFieldModal: {
+          isVisible: true,
+          field: action.field,
+
+        },
+      }
+    case 'close-modal':
+      return action.modal === 'CREATE_EDIT' ? {
+        ...state,
+        scalarFieldForm: {
+          ...state.scalarFieldForm,
+          isVisible: false,
+        },
+      } : {
+        ...state,
+        deleteFieldModal: {
+          ...state.deleteFieldModal,
+          isVisible: false,
+        },
+      }
+    default:
+      throw new Error()
+  }
+}
+
 const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
   const { data, loading } = useQuery<ContentModel>(CONTENT_MODEL, {
     variables: { modelId },
   })
-  const [showFieldDialog, setShowFieldDialog] = useState(false)
-  const [scalarField, setScalarField] = useState<ScalarField | ListField | NewField>({ type: DisplayType.SINGLE_LINE_TEXT })
 
-  const [showDeleteFieldDialog, setShowDeleteFieldDialog] = useState(false)
-  const [deleteField, setDeleteField] = useState<DeleteField | undefined>()
-
+  const [state, dispatch] = useReducer(reducer, {
+    scalarFieldForm: {
+      isVisible: false,
+      field: { type: DisplayType.SINGLE_LINE_TEXT },
+    },
+    deleteFieldModal: {
+      isVisible: false,
+    },
+  })
   if (loading) return null
+
   return data?.contentModel ? (
     <>
-      <ScalarFieldDialog
+      <ScalarFieldModal
+        isOpen={state.scalarFieldForm.isVisible}
         contentModel={data.contentModel}
-        isOpen={showFieldDialog}
-        field={scalarField}
-        onClose={() => setShowFieldDialog(false)}
+        field={state.scalarFieldForm.field}
+        onClose={() => dispatch({ type: 'close-modal', modal: 'CREATE_EDIT' })}
       />
-      <DeleteFieldDialog
-        isOpen={showDeleteFieldDialog}
-        onClose={() => setShowDeleteFieldDialog(false)}
-        field={deleteField}
+      <DeleteFieldModal
+        isOpen={state.deleteFieldModal.isVisible}
+        modelId={data.contentModel.id}
+        field={state.deleteFieldModal.field}
+        onClose={() => dispatch({ type: 'close-modal', modal: 'DELETE_FIELD' })}
       />
       <div
         className={css`
@@ -124,10 +126,9 @@ const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
           <Dropdown
             label="Create field"
             icon="chevron-down"
-            onSelect={item => {
-              setShowFieldDialog(true)
-              setScalarField({ type: item.key as DisplayType })
-            }}
+            onSelect={item =>
+              dispatch({ type: 'create-field', displayType: item.key as DisplayType })
+            }
             menuItems={[
               {
                 key: DisplayType.SINGLE_LINE_TEXT,
@@ -172,16 +173,12 @@ const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
             key={field.apiName}
             field={field}
             onDelete={field => {
-              if (field.__typename === 'ScalarField' || field.__typename === 'ListField' || field.__typename === 'RelationField') {
-                setDeleteField({ modelId, fieldId: field.id })
-              }
-              setShowDeleteFieldDialog(true)
+              dispatch({ type: 'delete-field', field, modelId })
             }}
             onEdit={field => {
-              if (field.__typename === 'ScalarField' || field.__typename === 'ListField') {
-                setScalarField(field)
+              if (isListField(field) || isScalarField(field)) {
+                dispatch({ type: 'edit-scalar-field', field })
               }
-              setShowFieldDialog(true)
             }}/>
         ))}
       </div>

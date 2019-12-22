@@ -1,15 +1,16 @@
 import React from 'react'
 import { Button, colors, Icon, shadows } from 'react-atomicus'
 import { css } from 'emotion'
-import { fieldIcon, fieldInfoBottom, fieldInfoTop, fieldName, isSystemField } from './field-utils'
+import { fieldIcon, fieldInfoBottom, fieldInfoTop, fieldName } from './field-utils'
 import CircleButton from '../../components/CircleButton'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
 import { navigate } from '@reach/router'
+import { isSystemField, UserField } from '../../types/foxcms.global'
 
 interface FieldRowProps {
   field: Field
-  onEdit: (field: Field) => void
-  onDelete: (field: Field) => void
+  onEdit: (field: UserField) => void
+  onDelete: (field: UserField) => void
 }
 
 const FieldRow: React.FC<FieldRowProps> = ({ field, onEdit, onDelete }) => {

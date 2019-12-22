@@ -14,7 +14,7 @@
     "lodash.snakecase": "^4.1.1",
     "pluralize": "^8.0.0",
     "react": "^16.8.6",
-    "react-atomicus": "../react-atomicus/react-atomicus-0.0.0-development.tgz",
+    "react-atomicus": "^1.4.0",
     "react-dom": "^16.8.6",
     "react-hook-form": "^3.28.4",
     "react-scripts": "3.3.0-next.62",
