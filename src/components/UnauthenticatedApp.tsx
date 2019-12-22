@@ -2,6 +2,7 @@ import React from 'react'
 import { css } from 'emotion'
 import { Button, Card, colors, Input } from 'react-atomicus'
 import useForm from 'react-hook-form'
+import { User } from '../types/foxcms.global'
 
 interface FormData {
   username: string;

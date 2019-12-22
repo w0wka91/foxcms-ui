@@ -74,15 +74,6 @@ function typeName(displayType: DisplayType) {
   }
 }
 
-const isSystemField = (field: Field) => {
-  return (
-    field.__typename === 'IdField' ||
-    field.__typename === 'CreatedAtField' ||
-    field.__typename === 'UpdatedAtField' ||
-    field.__typename === 'PublishStatusField'
-  )
-}
-
 const capitalize = (s: string) =>
   s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
 
@@ -125,7 +116,6 @@ export {
   fieldIcon,
   typeIcon,
   fieldName,
-  isSystemField,
   fieldInfoTop,
   fieldInfoBottom,
 }

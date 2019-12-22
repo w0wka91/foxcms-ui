@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import AuthenticatedApp from './components/AuthenticatedApp'
 import UnauthenticatedApp from './components/UnauthenticatedApp'
 import { useDataApi } from './hooks/useDataApi'
+import { User } from './types/foxcms.global'
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User>()
