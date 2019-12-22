@@ -10,11 +10,11 @@ interface Props {
 }
 
 const CircleButton: React.FC<PropsWithChildren<Props>> = ({
-                                                            icon,
-                                                            className,
-                                                            onClick,
-                                                            title,
-                                                          }) => {
+  icon,
+  className,
+  onClick,
+  title,
+}) => {
   return (
     <Button
       onClick={onClick}
@@ -26,10 +26,10 @@ const CircleButton: React.FC<PropsWithChildren<Props>> = ({
           border-radius: 100%;
           box-shadow: none;
         `,
-        className,
+        className
       )}
     >
-      <Button.Icon name={icon}/>
+      <Button.Icon name={icon} />
     </Button>
   )
 }
