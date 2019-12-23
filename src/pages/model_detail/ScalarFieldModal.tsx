@@ -1,6 +1,9 @@
-import { ContentModel, ContentModel_contentModel } from '../../generated/ContentModel'
+import {
+  ContentModel,
+  ContentModel_contentModel,
+} from '../../generated/ContentModel'
 import { Concern, Constraint } from '../../generated/globalTypes'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import useForm from 'react-hook-form'
 import snakeCase from 'lodash.snakecase'
 import { Button, Input, Modal, Toggle } from 'react-atomicus'
@@ -25,11 +28,19 @@ interface ScalarFieldDialogProps {
   field: ScalarField | ListField | FieldSkeleton
 }
 
-const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOpen, onClose, field }) => {
+const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
+  contentModel,
+  isOpen,
+  onClose,
+  field,
+}) => {
   const [apiNameTouched, setApiNameTouched] = useState(false)
   const [addScalarField] = useMutation(ADD_SCALAR_FIELD, {
     update(cache, { data: { addScalarField } }) {
-      const data = cache.readQuery<ContentModel>({ query: CONTENT_MODEL, variables: { modelId: contentModel.id } })
+      const data = cache.readQuery<ContentModel>({
+        query: CONTENT_MODEL,
+        variables: { modelId: contentModel.id },
+      })
       const fields = data?.contentModel?.fields?.concat(addScalarField)
       cache.writeQuery({
         query: CONTENT_MODEL,
@@ -58,8 +69,14 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOp
       setValue('name', field?.name)
       setValue('apiName', field?.apiName)
       setValue('list', isListField(field))
-      setValue('required', isScalarField(field) && field.concern === Concern.REQUIRED)
-      setValue('unique', isScalarField(field) && field.constraint === Constraint.UNIQUE)
+      setValue(
+        'required',
+        isScalarField(field) && field.concern === Concern.REQUIRED
+      )
+      setValue(
+        'unique',
+        isScalarField(field) && field.constraint === Constraint.UNIQUE
+      )
     } else {
       reset()
     }
@@ -83,25 +100,32 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOp
       console.log('Update field...')
     }
   }
+  const action = useMemo(() => (isFieldSkeleton(field) ? 'Create' : 'Update'), [
+    field,
+  ])
+  const nameRef = useRef<HTMLInputElement | null>(null)
+  useEffect(() => {
+    if (isOpen) setTimeout(() => nameRef.current?.focus(), 50)
+  }, [isOpen, nameRef])
 
   return (
     <Modal
       onClose={onClose}
       open={isOpen}
       className={css`
-          width: 50rem;
-        `}
+        width: 50rem;
+      `}
     >
-      <Modal.Header>{isFieldSkeleton(field) ? 'Create' : 'Update'} {typeName(field.type)} field</Modal.Header>
+      <Modal.Header>{`${action} ${typeName(field.type)}`} field</Modal.Header>
       <Modal.Content>
         <form
           id="scalar-field-form"
           onSubmit={handleSubmit(onSubmit)}
           className={css`
-              & > * {
-                margin-bottom: 1.2rem;
-              }
-            `}
+            & > * {
+              margin-bottom: 1.2rem;
+            }
+          `}
         >
           <Input
             name="name"
@@ -115,21 +139,24 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOp
               }
             }}
             error={errors?.name?.message}
-            ref={register({
-              required: 'Please enter a name',
-              pattern: {
-                value: /^[a-zA-Z0-9 _]*$/,
-                message: 'The name must be alphanumeric',
-              },
-              minLength: {
-                value: 3,
-                message: 'The name must contain at least 3 characters',
-              },
-              maxLength: {
-                value: 64,
-                message: 'The name can contain at most 64 characters',
-              },
-            })}
+            ref={e => {
+              register(e, {
+                required: 'Please enter a name',
+                pattern: {
+                  value: /^[a-zA-Z0-9 _]*$/,
+                  message: 'The name must be alphanumeric',
+                },
+                minLength: {
+                  value: 3,
+                  message: 'The name must contain at least 3 characters',
+                },
+                maxLength: {
+                  value: 64,
+                  message: 'The name can contain at most 64 characters',
+                },
+              })
+              nameRef.current = e
+            }}
           />
           <Input
             name="apiName"
@@ -159,27 +186,27 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOp
             name="list"
             checked={list}
             onChange={e => setValue('list', e.currentTarget.checked)}
-            label="Allow multiple values"/>
+            label="Allow multiple values"
+          />
           <Toggle
             name="required"
             checked={required}
             onChange={e => setValue('required', e.currentTarget.checked)}
             label="Is field required"
-            disabled={isListField(field)}/>
+            disabled={isListField(field)}
+          />
           <Toggle
             name="unique"
             checked={unique}
             onChange={e => setValue('unique', e.currentTarget.checked)}
             label="Is field unique"
-            disabled={isListField(field)}/>
+            disabled={isListField(field)}
+          />
         </form>
       </Modal.Content>
       <Modal.Footer>
-        <Button
-          type="submit"
-          form="scalar-field-form"
-          hierarchy="primary">
-          {isFieldSkeleton(field) ? 'Create' : 'Update'}
+        <Button type="submit" form="scalar-field-form" hierarchy="primary">
+          {action}
         </Button>
         <Button
           type="button"
