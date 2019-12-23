@@ -116,18 +116,18 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOp
             }}
             error={errors?.name?.message}
             ref={register({
-              required: 'Name is required',
+              required: 'Please enter a name',
               pattern: {
                 value: /^[a-zA-Z0-9 _]*$/,
                 message: 'The name must be alphanumeric',
               },
               minLength: {
                 value: 3,
-                message: 'Name must contain at least 3 characters',
+                message: 'The name must contain at least 3 characters',
               },
               maxLength: {
                 value: 64,
-                message: 'Name can contain at most 64 characters',
+                message: 'The name can contain at most 64 characters',
               },
             })}
           />
@@ -140,18 +140,18 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({ contentModel, isOp
             autoComplete="off"
             error={errors?.apiName?.message}
             ref={register({
-              required: 'The API name is required',
+              required: 'Please enter a API name',
               pattern: {
                 value: /^[a-zA-Z0-9_]*$/,
-                message: 'API name must be alphanumeric',
+                message: 'The API name must be alphanumeric',
               },
               minLength: {
                 value: 3,
-                message: 'API name must contain at least 3 characters',
+                message: 'The API name must contain at least 3 characters',
               },
               maxLength: {
                 value: 64,
-                message: 'API name can contain at most 64 characters',
+                message: 'The API name can contain at most 64 characters',
               },
             })}
           />

@@ -66,7 +66,7 @@ const UnauthenticatedApp: React.FC<Props> = ({ onSuccessfulLogin }) => {
             type="text"
             autoComplete="off"
             autoFocus
-            error={errors['username'] && 'This field is required'}
+            error={errors['username'] && 'Please enter your username'}
             ref={register({ required: true })}
           />
           <Input
@@ -75,7 +75,7 @@ const UnauthenticatedApp: React.FC<Props> = ({ onSuccessfulLogin }) => {
             iconRight="lock"
             type="password"
             autoComplete="off"
-            error={errors['password'] && 'This field is required'}
+            error={errors['password'] && 'Please enter your password'}
             ref={register({ required: true })}
           />
           <Button
