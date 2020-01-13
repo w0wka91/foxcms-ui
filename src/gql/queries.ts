@@ -1,5 +1,9 @@
 import gql from 'graphql-tag'
-import { SCALAR_FIELD_FRAGMENT, RELATION_FIELD_FRAGMENT } from './fragments'
+import {
+  SCALAR_FIELD_FRAGMENT,
+  RELATION_FIELD_FRAGMENT,
+  CONTENT_MODEL_FRAGMENT,
+} from './fragments'
 
 const CONTENT_MODEL = gql`
   query ContentModel($modelId: ID!) {
@@ -31,29 +35,10 @@ const CONTENT_MODEL = gql`
 const CONTENT_MODELS = gql`
   query ContentModels($branchId: ID!) {
     contentModels(branchId: $branchId) {
-      id
-      apiName
-      name
-      description
-      updatedAt
-      fields {
-        name
-        apiName
-        ... on ScalarField {
-          ...ScalarFieldParts
-        }
-        ... on ListField {
-          id
-          type
-        }
-        ... on RelationField {
-          ...RelationFieldParts
-        }
-      }
+      ...ContentModelParts
     }
   }
-  ${SCALAR_FIELD_FRAGMENT}
-  ${RELATION_FIELD_FRAGMENT}
+  ${CONTENT_MODEL_FRAGMENT}
 `
 
 export { CONTENT_MODELS, CONTENT_MODEL }

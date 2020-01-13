@@ -24,4 +24,34 @@ const RELATION_FIELD_FRAGMENT = gql`
   }
 `
 
-export { SCALAR_FIELD_FRAGMENT, RELATION_FIELD_FRAGMENT }
+const CONTENT_MODEL_FRAGMENT = gql`
+  fragment ContentModelParts on ContentModel {
+    id
+    apiName
+    name
+    description
+    updatedAt
+    fields {
+      name
+      apiName
+      ... on ScalarField {
+        ...ScalarFieldParts
+      }
+      ... on ListField {
+        id
+        type
+      }
+      ... on RelationField {
+        ...RelationFieldParts
+      }
+    }
+  }
+  ${SCALAR_FIELD_FRAGMENT}
+  ${RELATION_FIELD_FRAGMENT}
+`
+
+export {
+  SCALAR_FIELD_FRAGMENT,
+  RELATION_FIELD_FRAGMENT,
+  CONTENT_MODEL_FRAGMENT,
+}

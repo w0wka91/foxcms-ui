@@ -1,5 +1,30 @@
 import gql from 'graphql-tag'
-import { SCALAR_FIELD_FRAGMENT, RELATION_FIELD_FRAGMENT } from './fragments'
+import {
+  SCALAR_FIELD_FRAGMENT,
+  RELATION_FIELD_FRAGMENT,
+  CONTENT_MODEL_FRAGMENT,
+} from './fragments'
+
+const ADD_CONTENT_MODEL = gql`
+  mutation AddContentModel(
+    $branchId: ID!
+    $name: String!
+    $apiName: String!
+    $description: String!
+  ) {
+    addContentModel(
+      input: {
+        branchId: $branchId
+        name: $name
+        apiName: $apiName
+        description: $description
+      }
+    ) {
+      ...ContentModelParts
+    }
+  }
+  ${CONTENT_MODEL_FRAGMENT}
+`
 
 const ADD_SCALAR_FIELD = gql`
   mutation AddScalarField(
@@ -68,4 +93,4 @@ const DELETE_FIELD = gql`
     }
   }
 `
-export { ADD_SCALAR_FIELD, DELETE_FIELD, ADD_RELATION_FIELD }
+export { ADD_SCALAR_FIELD, DELETE_FIELD, ADD_RELATION_FIELD, ADD_CONTENT_MODEL }
