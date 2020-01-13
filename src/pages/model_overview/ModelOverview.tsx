@@ -1,5 +1,4 @@
 import { navigate, RouteComponentProps } from '@reach/router'
-import gql from 'graphql-tag'
 import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import PageHeader from '../../components/PageHeader'
@@ -26,7 +25,7 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
       `}
     >
       <PageHeader title="Content models">
-        <Button size="large" onClick={() => alert('')}>
+        <Button onClick={() => alert('')}>
           <Button.Icon name="plus" />
           <span>Create model</span>
         </Button>
@@ -35,6 +34,7 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
       <Card
         className={css`
           margin-top: 4.8rem;
+          min-width: 96rem;
         `}
       >
         {data && (

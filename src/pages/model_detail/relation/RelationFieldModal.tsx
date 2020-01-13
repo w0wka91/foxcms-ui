@@ -8,7 +8,7 @@ import {
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { ContentModels } from '../../../generated/ContentModels'
 import { CONTENT_MODELS, CONTENT_MODEL } from '../../../gql/queries'
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { RelationType } from '../../../generated/globalTypes'
 import pluralize from 'pluralize'
 import snakeCase from 'lodash.snakecase'
@@ -33,6 +33,15 @@ const resolveFieldName = (
     relationType === RelationType.ONE_TO_MANY
     ? contentModel.name
     : pluralize(contentModel.name)
+}
+
+interface FormData {
+  fieldName: string
+  apiName: string
+  relationType: RelationType
+  relatesToModel: ContentModel_contentModel
+  relatesToFieldName: string
+  relatesToApiName: string
 }
 
 const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
@@ -64,10 +73,12 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
       })
     },
   })
-  const { register, handleSubmit, setValue, watch, errors, reset } = useForm({
+  const { register, handleSubmit, setValue, watch, errors, reset } = useForm<
+    FormData
+  >({
     defaultValues: {
       relationType: RelationType.ONE_TO_ONE,
-      relatesToModel: null,
+      relatesToModel: undefined,
       relatesToFieldName: resolveFieldName(
         contentModel,
         RelationType.ONE_TO_ONE
@@ -79,11 +90,11 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
   })
   const { relatesToModel, relationType } = watch()
   useEffect(() => {
-    register({ name: 'relationType' })
-    register({ name: 'relatesToModel' })
+    register('relationType')
+    register('relatesToModel')
   }, [register])
   useEffect(() => {
-    let fieldName = resolveFieldName(contentModel, relationType)
+    let fieldName = resolveFieldName(contentModel, relationType as RelationType)
     setValue('relatesToFieldName', fieldName)
     setValue('relatesToApiName', snakeCase(fieldName))
     if (relatesToModel != null) {
@@ -93,7 +104,10 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
           : relationType === RelationType.MANY_TO_ONE
           ? RelationType.ONE_TO_MANY
           : relationType
-      let fieldName = resolveFieldName(relatesToModel, swappedRelationType)
+      let fieldName = resolveFieldName(
+        relatesToModel as ContentModel_contentModel,
+        swappedRelationType as RelationType
+      )
       setValue('fieldName', fieldName, true)
       setValue('apiName', snakeCase(fieldName), true)
     }
@@ -135,11 +149,9 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
         >
           <RelationFormCard title={contentModel.name}>
             <Input
-              ref={e =>
-                register(e, {
-                  required: 'Please enter a name',
-                })
-              }
+              ref={register({
+                required: 'Please enter a name',
+              })}
               iconRight="type"
               error={relatesToModel && errors?.fieldName?.message}
               disabled={!relatesToModel}
@@ -154,7 +166,7 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
                   required: 'Please enter a API name',
                 })
               }
-              error={relatesToModel && errors?.apiName?.message}
+              error={relatesToModel && errors?.relatesToApiName?.message}
               disabled={!relatesToModel}
               iconRight="git-commit"
               name="apiName"
@@ -186,10 +198,10 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
                 value={
                   relatesToModel
                     ? { value: relatesToModel, label: relatesToModel.name }
-                    : null
+                    : { value: null, label: 'Select a model' }
                 }
                 options={data.contentModels.map(model => ({
-                  value: model,
+                  value: model as ContentModel_contentModel,
                   label: model.name,
                 }))}
               />

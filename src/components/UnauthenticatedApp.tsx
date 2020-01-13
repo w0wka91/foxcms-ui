@@ -1,12 +1,12 @@
 import React from 'react'
 import { css } from 'emotion'
 import { Button, Card, colors, Input } from 'react-atomicus'
-import useForm from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { User } from '../types/foxcms.global'
 
 interface FormData {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 
 interface Props {
@@ -78,11 +78,7 @@ const UnauthenticatedApp: React.FC<Props> = ({ onSuccessfulLogin }) => {
             error={errors['password'] && 'Please enter your password'}
             ref={register({ required: true })}
           />
-          <Button
-            size="large"
-            fluid={true}
-            disabled={formState.isSubmitting}
-          >
+          <Button size="large" fluid={true} disabled={formState.isSubmitting}>
             Login
           </Button>
         </form>

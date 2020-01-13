@@ -9960,10 +9960,10 @@ react-error-overlay@6.1.0-next.62+3d6d0a1f:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.1.0-next.62.tgz#d4cacfaab93c35c881fe745eb2fe5bc7ae69dc0e"
   integrity sha512-CiFuN+1tBKvdx6MR34f0ySO0KpXrUyeKiSjM2XjQuJcpc3ISKF9utWuaZzEqGbTgfzAy3qFj2iOyT9m46Yh5EA==
 
-react-hook-form@^3.28.4:
-  version "3.29.4"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.29.4.tgz#0d4a6650d3f8035e5f4f6740258ac711e0fc3184"
-  integrity sha512-NsqXUIHPmiXcb11gY5e4kiJSc0WONXRo28JLuXBL0dJr1vk60W5IwnzBDeT0mb+V3MIjPrV0lFPKo57VnSZAPw==
+react-hook-form@^4.4.8:
+  version "4.4.8"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-4.4.8.tgz#fb228eea8d168362c8ee966fb91cb49b19bfa050"
+  integrity sha512-G43AJk75yhMfBggj7uF2EwSZH2G/uMFeC1LxGik8XcgUPO23o488t+CUEBvP0TXVlEc4ld7D4Kbmj5LVCPYo0w==
 
 react-input-autosize@^2.2.2:
   version "2.2.2"

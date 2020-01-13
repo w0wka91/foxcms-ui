@@ -24,6 +24,7 @@ const FieldRow: React.FC<FieldRowProps> = ({ field, onEdit, onDelete }) => {
       key={field.apiName}
       className={css`
         display: flex;
+        min-width: 96rem;
         background: #fff;
         align-items: center;
         height: 6.4rem;
