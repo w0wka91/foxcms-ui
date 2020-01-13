@@ -1,7 +1,12 @@
 import React from 'react'
 import { colors, Icon, shadows } from 'react-atomicus'
 import { css } from 'emotion'
-import { fieldIcon, fieldInfoBottom, fieldInfoTop, fieldName } from './field-utils'
+import {
+  fieldIcon,
+  fieldInfoBottom,
+  fieldInfoTop,
+  fieldName,
+} from './field-utils'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
 import { isSystemField, UserField } from '../../types/foxcms.global'
 import { Link } from '@reach/router'
@@ -116,22 +121,22 @@ const FieldRow: React.FC<FieldRowProps> = ({ field, onEdit, onDelete }) => {
         {!isSystemField(field) && (
           <>
             <CircleButton
-              icon="minus"
-              onClick={() => onDelete(field)}
-              className={css`
-                color: ${colors.red300};
-                &:hover:enabled {
-                  background-color: ${colors.red100};
-                }
-              `}
-            />
-            <CircleButton
               icon="edit-2"
               onClick={() => onEdit(field)}
               className={css`
                 color: ${colors.grey600};
                 &:hover:enabled {
                   background-color: ${colors.blue100};
+                }
+              `}
+            />
+            <CircleButton
+              icon="minus"
+              onClick={() => onDelete(field)}
+              className={css`
+                color: ${colors.red300};
+                &:hover:enabled {
+                  background-color: ${colors.red100};
                 }
               `}
             />

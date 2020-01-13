@@ -1,4 +1,9 @@
-import { Concern, Constraint, DisplayType, RelationType } from '../../generated/globalTypes'
+import {
+  Concern,
+  Constraint,
+  DisplayType,
+  RelationType,
+} from '../../generated/globalTypes'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
 
 const fieldName = (field: Field) => {
@@ -95,6 +100,7 @@ const fieldInfoBottom = (field: Field) => {
     case 'RelationField':
       switch (field.relationType) {
         case RelationType.ONE_TO_ONE:
+        case RelationType.ONE_TO_ONE_DIRECTIVE:
           return 'One to one'
         case RelationType.ONE_TO_MANY:
           return 'One to many'
