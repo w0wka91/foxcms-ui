@@ -8,7 +8,7 @@ import {
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { ContentModels } from '../../../generated/ContentModels'
 import { CONTENT_MODELS, CONTENT_MODEL } from '../../../gql/queries'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { RelationType } from '../../../generated/globalTypes'
 import pluralize from 'pluralize'
 import snakeCase from 'lodash.snakecase'
@@ -39,7 +39,10 @@ interface FormData {
   fieldName: string
   apiName: string
   relationType: RelationType
-  relatesToModel: ContentModel_contentModel
+  relatesToModel: {
+    value: ContentModel_contentModel
+    label: string
+  } | null
   relatesToFieldName: string
   relatesToApiName: string
 }
@@ -73,12 +76,17 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
       })
     },
   })
-  const { register, handleSubmit, setValue, watch, errors, reset } = useForm<
-    FormData
-  >({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    errors,
+    reset,
+    control,
+  } = useForm<FormData>({
     defaultValues: {
       relationType: RelationType.ONE_TO_ONE,
-      relatesToModel: undefined,
       relatesToFieldName: resolveFieldName(
         contentModel,
         RelationType.ONE_TO_ONE
@@ -89,10 +97,6 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
     },
   })
   const { relatesToModel, relationType } = watch()
-  useEffect(() => {
-    register('relationType')
-    register('relatesToModel')
-  }, [register])
   useEffect(() => {
     let fieldName = resolveFieldName(contentModel, relationType as RelationType)
     setValue('relatesToFieldName', fieldName)
@@ -105,27 +109,31 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
           ? RelationType.ONE_TO_MANY
           : relationType
       let fieldName = resolveFieldName(
-        relatesToModel as ContentModel_contentModel,
+        relatesToModel.value,
         swappedRelationType as RelationType
       )
       setValue('fieldName', fieldName, true)
       setValue('apiName', snakeCase(fieldName), true)
     }
   }, [contentModel, relatesToModel, relationType, setValue])
+  const closeModal = () => {
+    setValue('relatesToModel', null)
+    reset()
+    onClose()
+  }
   const onSubmit = async (data: any) => {
     await addRelationField({
       variables: {
         modelId: contentModel.id,
         fieldName: data.fieldName,
         apiName: data.apiName,
-        relatesToModelId: data.relatesToModel.id,
+        relatesToModelId: data.relatesToModel.value.id,
         relatesToFieldName: data.relatesToFieldName,
         relatesToApiName: data.relatesToApiName,
         relationType: data.relationType,
       },
     })
-    onClose()
-    reset()
+    closeModal()
   }
   if (loading) return null
   return data ? (
@@ -153,7 +161,7 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
                 required: 'Please enter a name',
               })}
               iconRight="type"
-              error={relatesToModel && errors?.fieldName?.message}
+              error={relatesToModel ? errors?.fieldName?.message : ''}
               disabled={!relatesToModel}
               name="fieldName"
               autoComplete="off"
@@ -161,12 +169,10 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
               label="Name"
             />
             <Input
-              ref={e =>
-                register(e, {
-                  required: 'Please enter a API name',
-                })
-              }
-              error={relatesToModel && errors?.relatesToApiName?.message}
+              ref={register({
+                required: 'Please enter a API name',
+              })}
+              error={relatesToModel ? errors?.relatesToApiName?.message : ''}
               disabled={!relatesToModel}
               iconRight="git-commit"
               name="apiName"
@@ -175,44 +181,45 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
               label="API name"
             />
           </RelationFormCard>
-          <RelationTypeList
-            onSelect={relationType => {
-              setValue('relationType', relationType)
-            }}
+          <Controller
+            as={RelationTypeList}
+            name="relationType"
+            value={relationType}
+            control={control}
           />
           <RelationFormCard
             title={
-              <Select
-                styles={{
-                  control: styles => ({
-                    ...styles,
-                  }),
-                }}
-                className={css`
-                  width: 19.2rem;
-                `}
+              <Controller
+                as={
+                  <Select
+                    styles={{
+                      control: styles => ({
+                        ...styles,
+                        width: '19.2rem',
+                      }),
+                    }}
+                  />
+                }
+                options={data.contentModels
+                  .filter(model => model.id !== contentModel.id)
+                  .map(model => ({
+                    value: model as ContentModel_contentModel,
+                    label: model.name,
+                  }))}
                 placeholder="Select a model"
-                onChange={(relatesToModel: any) =>
-                  setValue('relatesToModel', relatesToModel.value)
-                }
-                value={
-                  relatesToModel
-                    ? { value: relatesToModel, label: relatesToModel.name }
-                    : { value: null, label: 'Select a model' }
-                }
-                options={data.contentModels.map(model => ({
-                  value: model as ContentModel_contentModel,
-                  label: model.name,
-                }))}
+                control={control}
+                rules={{ required: true }}
+                onChange={([selected]) => {
+                  return { value: selected }
+                }}
+                name="relatesToModel"
               />
             }
           >
             <Input
-              ref={e =>
-                register(e, {
-                  required: 'Please enter a name',
-                })
-              }
+              ref={register({
+                required: 'Please enter a name',
+              })}
               error={errors?.relatesToFieldName?.message}
               iconRight="type"
               name="relatesToFieldName"
@@ -221,11 +228,9 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
               label="Name"
             />
             <Input
-              ref={e =>
-                register(e, {
-                  required: 'Please enter a name',
-                })
-              }
+              ref={register({
+                required: 'Please enter a name',
+              })}
               error={errors?.relatesToApiName?.message}
               iconRight="git-commit"
               name="relatesToApiName"
@@ -240,14 +245,7 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
         <Button type="submit" form="relation-field-form" hierarchy="primary">
           Create
         </Button>
-        <Button
-          type="button"
-          hierarchy="tertiary"
-          onClick={() => {
-            reset()
-            onClose()
-          }}
-        >
+        <Button type="button" hierarchy="tertiary" onClick={closeModal}>
           Cancel
         </Button>
       </Modal.Footer>

@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { RelationType } from '../../../generated/globalTypes'
 import { css } from 'emotion'
 import { colors } from 'react-atomicus'
 
 const RelationTypeList = ({
-  onSelect,
+  onChange,
+  value,
 }: {
-  onSelect: (relationType: RelationType) => void
+  onChange: (relationType: RelationType) => void
+  value: RelationType
 }) => {
-  const [selectedRelation, setSelectedRelation] = useState(
-    RelationType.ONE_TO_ONE
-  )
   const selectedStyle = css`
     border-left: 3px solid ${colors.blue500};
     color: ${colors.grey800};
@@ -51,15 +50,14 @@ const RelationTypeList = ({
             <li
               key={relationType}
               onClick={() => {
-                setSelectedRelation(relationType as RelationType)
-                onSelect(relationType as RelationType)
+                onChange(relationType as RelationType)
               }}
               className={css`
                 cursor: pointer;
                 color: ${colors.grey200};
                 border: 1px solid ${colors.grey200};
                 border-top: none;
-                ${selectedRelation === relationType && selectedStyle}
+                ${value === relationType && selectedStyle}
               `}
             >
               {label(relationType as RelationType)}
