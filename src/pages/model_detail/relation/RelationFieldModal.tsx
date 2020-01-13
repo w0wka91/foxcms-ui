@@ -16,6 +16,7 @@ import { RelationTypeList } from './RelationTypeList'
 import { RelationFormCard } from './RelationFormCard'
 import Select from 'react-select'
 import { ADD_RELATION_FIELD } from '../../../gql/mutations'
+import { AddRelationField_addRelationField as AddRelationPayload } from '../../../generated/AddRelationField'
 
 interface RelationFieldModalProps {
   branchId?: string
@@ -45,17 +46,21 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
   })
   const [addRelationField] = useMutation(ADD_RELATION_FIELD, {
     update(cache, { data: { addRelationField } }) {
-      const data = cache.readQuery<ContentModel>({
-        query: CONTENT_MODEL,
-        variables: { modelId: contentModel.id },
-      })
-      console.log(data)
-      const fields = data?.contentModel?.fields?.concat(addRelationField)
-      console.log(fields)
-      cache.writeQuery({
-        query: CONTENT_MODEL,
-        variables: { modelId: contentModel.id },
-        data: { contentModel: { ...data?.contentModel, fields } },
+      addRelationField.forEach((newRelation: AddRelationPayload) => {
+        try {
+          const data = cache.readQuery<ContentModel>({
+            query: CONTENT_MODEL,
+            variables: { modelId: newRelation.modelId },
+          })
+          const fields = data?.contentModel?.fields?.concat(newRelation.field)
+          cache.writeQuery({
+            query: CONTENT_MODEL,
+            variables: { modelId: newRelation.modelId },
+            data: { contentModel: { ...data?.contentModel, fields } },
+          })
+        } catch (ex) {
+          // readQuery throws an error currently if there is no data present
+        }
       })
     },
   })
@@ -110,7 +115,13 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
   }
   if (loading) return null
   return data ? (
-    <Modal open={isOpen} onClose={onClose}>
+    <Modal
+      open={isOpen}
+      onClose={onClose}
+      className={css`
+        max-width: 999rem;
+      `}
+    >
       <Modal.Header>Create relation field</Modal.Header>
       <Modal.Content>
         <form

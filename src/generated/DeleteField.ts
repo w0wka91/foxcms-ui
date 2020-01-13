@@ -6,8 +6,14 @@
 // GraphQL mutation operation: DeleteField
 // ====================================================
 
+export interface DeleteField_deleteField {
+  __typename: "DeleteFieldPayload";
+  modelId: string;
+  fieldId: string;
+}
+
 export interface DeleteField {
-  deleteField: string;
+  deleteField: DeleteField_deleteField[];
 }
 
 export interface DeleteFieldVariables {

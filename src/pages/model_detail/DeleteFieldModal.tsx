@@ -3,6 +3,7 @@ import React from 'react'
 import { useMutation } from '@apollo/react-hooks'
 import { DELETE_FIELD } from '../../gql/mutations'
 import { ContentModel } from '../../generated/ContentModel'
+import { DeleteField_deleteField as DeleteFieldPayload } from '../../generated/DeleteField'
 import { CONTENT_MODEL } from '../../gql/queries'
 import { Button, colors, Modal } from 'react-atomicus'
 import { css } from 'emotion'
@@ -14,21 +15,37 @@ interface DeleteFieldModalProps {
   field?: UserField
 }
 
-const DeleteFieldModal: React.FC<DeleteFieldModalProps> = ({ isOpen, onClose, field, modelId }) => {
+const DeleteFieldModal: React.FC<DeleteFieldModalProps> = ({
+  isOpen,
+  onClose,
+  field,
+  modelId,
+}) => {
   const [deleteField] = useMutation(DELETE_FIELD, {
     variables: {
       modelId: modelId,
       fieldId: field?.id,
     },
     update(cache, { data: { deleteField } }) {
-      const data = cache.readQuery<ContentModel>({ query: CONTENT_MODEL, variables: { modelId: modelId } })
-      const fields = data?.contentModel
-        ?.fields
-        ?.filter(f => isUserField(f) && f.id !== field?.id)
-      cache.writeQuery({
-        query: CONTENT_MODEL,
-        variables: { modelId: modelId },
-        data: { contentModel: { ...data?.contentModel, fields } },
+      deleteField.forEach((deletedField: DeleteFieldPayload) => {
+        try {
+          const data = cache.readQuery<ContentModel>({
+            query: CONTENT_MODEL,
+            variables: { modelId: deletedField.modelId },
+          })
+          const fields = data?.contentModel?.fields?.filter(
+            f =>
+              !isUserField(f) ||
+              (isUserField(f) && f.id !== deletedField.fieldId)
+          )
+          cache.writeQuery({
+            query: CONTENT_MODEL,
+            variables: { modelId: deletedField.modelId },
+            data: { contentModel: { ...data?.contentModel, fields } },
+          })
+        } catch (ex) {
+          // readQuery throws an error currently if there is no data present
+        }
       })
     },
   })
@@ -40,9 +57,10 @@ const DeleteFieldModal: React.FC<DeleteFieldModalProps> = ({ isOpen, onClose, fi
           className={css`
             width: 51.2rem;
             font-color: ${colors.grey800};
-        `}>
-          By removing this field you will delete <b>ALL</b> content associated with it. Are you sure you want to
-          proceed?
+          `}
+        >
+          By removing this field you will delete <b>ALL</b> content associated
+          with it. Are you sure you want to proceed?
         </p>
       </Modal.Content>
       <Modal.Footer>
@@ -52,14 +70,11 @@ const DeleteFieldModal: React.FC<DeleteFieldModalProps> = ({ isOpen, onClose, fi
             await deleteField()
             onClose()
           }}
-          intent="danger">
+          intent="danger"
+        >
           Delete
         </Button>
-        <Button
-          type="button"
-          hierarchy="tertiary"
-          onClick={onClose}
-        >
+        <Button type="button" hierarchy="tertiary" onClick={onClose}>
           Cancel
         </Button>
       </Modal.Footer>

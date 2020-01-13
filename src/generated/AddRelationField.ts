@@ -8,23 +8,29 @@ import { RelationType } from "./globalTypes";
 // GraphQL mutation operation: AddRelationField
 // ====================================================
 
-export interface AddRelationField_addRelationField_relatesTo {
+export interface AddRelationField_addRelationField_field_relatesTo {
   __typename: "ContentModel";
   id: string;
   name: string;
 }
 
-export interface AddRelationField_addRelationField {
+export interface AddRelationField_addRelationField_field {
   __typename: "RelationField";
   id: string;
   name: string;
   apiName: string;
   relationType: RelationType;
-  relatesTo: AddRelationField_addRelationField_relatesTo;
+  relatesTo: AddRelationField_addRelationField_field_relatesTo;
+}
+
+export interface AddRelationField_addRelationField {
+  __typename: "AddRelationFieldPayload";
+  modelId: string;
+  field: AddRelationField_addRelationField_field;
 }
 
 export interface AddRelationField {
-  addRelationField: AddRelationField_addRelationField;
+  addRelationField: AddRelationField_addRelationField[];
 }
 
 export interface AddRelationFieldVariables {

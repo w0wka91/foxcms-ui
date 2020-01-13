@@ -49,8 +49,11 @@ const ADD_RELATION_FIELD = gql`
         relationType: $relationType
       }
     ) {
-      ... on RelationField {
-        ...RelationFieldParts
+      modelId
+      field {
+        ... on RelationField {
+          ...RelationFieldParts
+        }
       }
     }
   }
@@ -59,7 +62,10 @@ const ADD_RELATION_FIELD = gql`
 
 const DELETE_FIELD = gql`
   mutation DeleteField($modelId: ID!, $fieldId: ID!) {
-    deleteField(modelId: $modelId, id: $fieldId)
+    deleteField(modelId: $modelId, id: $fieldId) {
+      modelId
+      fieldId
+    }
   }
 `
 export { ADD_SCALAR_FIELD, DELETE_FIELD, ADD_RELATION_FIELD }
