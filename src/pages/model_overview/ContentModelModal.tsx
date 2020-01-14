@@ -1,24 +1,10 @@
-import {
-  ContentModel,
-  ContentModel_contentModel,
-} from '../../generated/ContentModel'
-import { Concern, Constraint } from '../../generated/globalTypes'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import snakeCase from 'lodash.snakecase'
 import { Button, Input, Modal } from 'react-atomicus'
 import { css } from 'emotion'
 import { useMutation } from '@apollo/react-hooks'
-import { CONTENT_MODEL, CONTENT_MODELS } from '../../gql/queries'
+import { CONTENT_MODELS } from '../../gql/queries'
 import { ADD_CONTENT_MODEL } from '../../gql/mutations'
-import {
-  FieldSkeleton,
-  isFieldSkeleton,
-  isListField,
-  isScalarField,
-  ListField,
-  ScalarField,
-} from '../../types/foxcms.global'
 import { ContentModels } from '../../generated/ContentModels'
 
 interface ContentModelModalProps {
@@ -54,7 +40,7 @@ const ContentModelModal: React.FC<ContentModelModalProps> = ({
   })
   const [apiNameTouched, setApiNameTouched] = useState(false)
   const nameRef = useRef<HTMLInputElement | null>(null)
-  const { register, handleSubmit, setValue, errors, reset, watch } = useForm<
+  const { register, handleSubmit, setValue, errors, reset } = useForm<
     FormData
   >()
   useEffect(() => {
