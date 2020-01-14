@@ -4,9 +4,9 @@ import {
 } from '../../generated/ContentModel'
 import { Concern, Constraint } from '../../generated/globalTypes'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import snakeCase from 'lodash.snakecase'
-import { Button, Input, Modal } from 'react-atomicus'
+import { Button, Input, Modal, Toggle } from 'react-atomicus'
 import { css } from 'emotion'
 import { typeName } from './field-utils'
 import { useMutation } from '@apollo/react-hooks'
@@ -58,7 +58,7 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
     },
   })
 
-  const { register, handleSubmit, setValue, errors, reset, watch } = useForm<
+  const { register, handleSubmit, setValue, errors, reset, control } = useForm<
     FormData
   >({
     defaultValues: {
@@ -67,13 +67,6 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
       unique: false,
     },
   })
-  const { list, required, unique } = watch()
-  useEffect(() => {
-    register({ name: 'list' })
-    register({ name: 'required' })
-    register({ name: 'unique' })
-  }, [register])
-
   useEffect(() => {
     if (isScalarField(field) || isListField(field)) {
       setValue('name', field?.name)
@@ -191,6 +184,24 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
                 message: 'The API name can contain at most 64 characters',
               },
             })}
+          />
+          <Controller
+            name="list"
+            control={control}
+            as={Toggle}
+            label="Allow multiple values"
+          />
+          <Controller
+            name="required"
+            control={control}
+            as={Toggle}
+            label="Is field required"
+          />
+          <Controller
+            name="unique"
+            control={control}
+            as={Toggle}
+            label="Is field unique"
           />
         </form>
       </Modal.Content>
