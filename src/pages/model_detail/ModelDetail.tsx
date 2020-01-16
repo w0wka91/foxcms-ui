@@ -159,7 +159,10 @@ const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
           margin-top: 4.8rem;
         `}
       >
-        <PageHeader title={data.contentModel.name}>
+        <PageHeader
+          title={data.contentModel.name}
+          subtitle={`#${data.contentModel.apiName}`}
+        >
           <Dropdown
             label="Create field"
             icon="chevron-down"

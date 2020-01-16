@@ -4,8 +4,12 @@ import App from './App'
 import { Normalize } from 'react-atomicus'
 import { ApolloProvider } from '@apollo/react-hooks'
 import ApolloClient from 'apollo-client'
-import 'easymde/dist/easymde.min.css'
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/mode/javascript/javascript'
+import {
+  InMemoryCache,
+  IntrospectionFragmentMatcher,
+} from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
 
 import introspectionQueryResultData from './fragmentTypes.json'
@@ -23,8 +27,8 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <Normalize/>
-    <App/>
+    <Normalize />
+    <App />
   </ApolloProvider>,
-  document.getElementById('root'),
+  document.getElementById('root')
 )

@@ -103,7 +103,6 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
 
         <Card
           className={css`
-            margin-top: 4.8rem;
             min-width: 96rem;
           `}
         >
