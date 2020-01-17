@@ -4,18 +4,6 @@ import pluralize from 'pluralize'
 import { isUserField, isScalarField, ScalarField } from '../types/foxcms.global'
 import { DisplayType } from '../generated/globalTypes'
 
-const needsQuotes = (scalarField: ScalarField) => {
-  switch (scalarField.type) {
-    case DisplayType.SINGLE_LINE_TEXT:
-    case DisplayType.MULTI_LINE_TEXT:
-    case DisplayType.JSON_EDITOR:
-    case DisplayType.DATE:
-      return true
-    default:
-      return false
-  }
-}
-
 const generateQuery = (
   contentModel: ContentModel_contentModel | null | undefined,
   contentId?: string
@@ -25,14 +13,14 @@ const generateQuery = (
     return gql`
     query {
         ${contentModel?.apiName.toLowerCase() ??
-          'placeholder'}(where: {id: "${contentId}"}) {
+          'modelName'}(where: {id: "${contentId}"}) {
             ${cols}
         }
     }
     `
   } else {
     const pluralizedApiName = pluralize(
-      contentModel?.apiName ?? 'placeholder'
+      contentModel?.apiName ?? 'modelName'
     ).toLowerCase()
     return gql`
       query {
@@ -44,6 +32,21 @@ const generateQuery = (
   }
 }
 
+const normalizeValue = (scalarField: ScalarField, val: any) => {
+  if (!val) return null
+  const escapedValue = typeof val === 'string' ? val.replace(/"/g, '\\"') : val
+  switch (scalarField.type) {
+    case DisplayType.SINGLE_LINE_TEXT:
+    case DisplayType.DATE:
+      return `"${escapedValue}"`
+    case DisplayType.MULTI_LINE_TEXT:
+    case DisplayType.JSON_EDITOR:
+      return `"""${escapedValue}"""`
+    default:
+      return escapedValue
+  }
+}
+
 const generateMutation = (
   contentModel: ContentModel_contentModel | null | undefined,
   data: any,
@@ -52,14 +55,7 @@ const generateMutation = (
   const scalarFieldData = contentModel?.fields
     .filter(f => isUserField(f) && isScalarField(f))
     .map(
-      f =>
-        `${f.apiName}: ${
-          needsQuotes(f as ScalarField) && data[f.apiName]
-            ? `"${data[f.apiName]}"`
-            : data[f.apiName]
-            ? data[f.apiName]
-            : null
-        }`
+      f => `${f.apiName}: ${normalizeValue(f as ScalarField, data[f.apiName])}`
     )
   if (!contentId) {
     return gql`
@@ -68,18 +64,15 @@ const generateMutation = (
       'placeholder: placeholder'}, status: Published }) {
         id
       }
-    }
-  `
+    }`
   } else {
-    console.log(scalarFieldData?.join(', '))
     return gql`
     mutation {
       update${contentModel?.apiName}(data: { ${scalarFieldData?.join(', ') ??
       'placeholder: placeholder'}, status: Published }, where: { id: "${contentId}"}) {
-        id createdAt updatedAt status   ${Object.keys(data).join(' ')}
+        id createdAt updatedAt status ${Object.keys(data).join(' ')}
       }
-    }
-  `
+    }`
   }
 }
 
