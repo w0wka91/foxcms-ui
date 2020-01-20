@@ -19,6 +19,7 @@ export interface RelationFieldParts {
   id: string;
   name: string;
   apiName: string;
+  position: number;
   relationType: RelationType;
   relatesTo: RelationFieldParts_relatesTo;
 }

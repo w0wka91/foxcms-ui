@@ -19,6 +19,7 @@ export interface AddRelationField_addRelationField_field {
   id: string;
   name: string;
   apiName: string;
+  position: number;
   relationType: RelationType;
   relatesTo: AddRelationField_addRelationField_field_relatesTo;
 }

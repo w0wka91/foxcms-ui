@@ -13,6 +13,7 @@ export interface ScalarFieldParts {
   id: string;
   name: string;
   apiName: string;
+  position: number;
   type: DisplayType;
   concern: Concern;
   constraint: Constraint;

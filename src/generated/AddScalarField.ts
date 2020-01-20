@@ -13,6 +13,7 @@ export interface AddScalarField_addScalarField {
   id: string;
   name: string;
   apiName: string;
+  position: number;
   type: DisplayType;
   concern: Concern;
   constraint: Constraint;

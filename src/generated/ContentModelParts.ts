@@ -12,12 +12,14 @@ export interface ContentModelParts_fields_CreatedAtField {
   __typename: "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
+  position: number;
 }
 
 export interface ContentModelParts_fields_ScalarField {
   __typename: "ScalarField";
   name: string;
   apiName: string;
+  position: number;
   id: string;
   type: DisplayType;
   concern: Concern;
@@ -28,6 +30,7 @@ export interface ContentModelParts_fields_ListField {
   __typename: "ListField";
   name: string;
   apiName: string;
+  position: number;
   id: string;
   type: DisplayType;
 }
@@ -42,6 +45,7 @@ export interface ContentModelParts_fields_RelationField {
   __typename: "RelationField";
   name: string;
   apiName: string;
+  position: number;
   id: string;
   relationType: RelationType;
   relatesTo: ContentModelParts_fields_RelationField_relatesTo;

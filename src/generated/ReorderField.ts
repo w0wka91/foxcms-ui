@@ -5,17 +5,17 @@
 import { DisplayType, Concern, Constraint, RelationType } from "./globalTypes";
 
 // ====================================================
-// GraphQL query operation: ContentModel
+// GraphQL mutation operation: ReorderField
 // ====================================================
 
-export interface ContentModel_contentModel_fields_CreatedAtField {
+export interface ReorderField_reorderField_fields_CreatedAtField {
   __typename: "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
   position: number;
 }
 
-export interface ContentModel_contentModel_fields_ScalarField {
+export interface ReorderField_reorderField_fields_ScalarField {
   __typename: "ScalarField";
   name: string;
   apiName: string;
@@ -26,7 +26,7 @@ export interface ContentModel_contentModel_fields_ScalarField {
   constraint: Constraint;
 }
 
-export interface ContentModel_contentModel_fields_ListField {
+export interface ReorderField_reorderField_fields_ListField {
   __typename: "ListField";
   name: string;
   apiName: string;
@@ -35,38 +35,40 @@ export interface ContentModel_contentModel_fields_ListField {
   type: DisplayType;
 }
 
-export interface ContentModel_contentModel_fields_RelationField_relatesTo {
+export interface ReorderField_reorderField_fields_RelationField_relatesTo {
   __typename: "ContentModel";
   id: string;
   name: string;
 }
 
-export interface ContentModel_contentModel_fields_RelationField {
+export interface ReorderField_reorderField_fields_RelationField {
   __typename: "RelationField";
   name: string;
   apiName: string;
   position: number;
   id: string;
   relationType: RelationType;
-  relatesTo: ContentModel_contentModel_fields_RelationField_relatesTo;
+  relatesTo: ReorderField_reorderField_fields_RelationField_relatesTo;
 }
 
-export type ContentModel_contentModel_fields = ContentModel_contentModel_fields_CreatedAtField | ContentModel_contentModel_fields_ScalarField | ContentModel_contentModel_fields_ListField | ContentModel_contentModel_fields_RelationField;
+export type ReorderField_reorderField_fields = ReorderField_reorderField_fields_CreatedAtField | ReorderField_reorderField_fields_ScalarField | ReorderField_reorderField_fields_ListField | ReorderField_reorderField_fields_RelationField;
 
-export interface ContentModel_contentModel {
+export interface ReorderField_reorderField {
   __typename: "ContentModel";
   id: string;
   apiName: string;
   name: string;
   description: string | null;
   updatedAt: string;
-  fields: ContentModel_contentModel_fields[];
+  fields: ReorderField_reorderField_fields[];
 }
 
-export interface ContentModel {
-  contentModel: ContentModel_contentModel | null;
+export interface ReorderField {
+  reorderField: ReorderField_reorderField | null;
 }
 
-export interface ContentModelVariables {
+export interface ReorderFieldVariables {
   modelId: string;
+  from: number;
+  to: number;
 }
