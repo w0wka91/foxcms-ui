@@ -5,6 +5,7 @@ const SCALAR_FIELD_FRAGMENT = gql`
     id
     name
     apiName
+    position
     type
     concern
     constraint
@@ -16,6 +17,7 @@ const RELATION_FIELD_FRAGMENT = gql`
     id
     name
     apiName
+    position
     relationType: type
     relatesTo {
       id
@@ -34,6 +36,7 @@ const CONTENT_MODEL_FRAGMENT = gql`
     fields {
       name
       apiName
+      position
       ... on ScalarField {
         ...ScalarFieldParts
       }

@@ -93,4 +93,20 @@ const DELETE_FIELD = gql`
     }
   }
 `
-export { ADD_SCALAR_FIELD, DELETE_FIELD, ADD_RELATION_FIELD, ADD_CONTENT_MODEL }
+
+const REORDER_FIELD = gql`
+  mutation ReorderField($modelId: ID!, $from: Int!, $to: Int!) {
+    reorderField(modelId: $modelId, from: $from, to: $to) {
+      ...ContentModelParts
+    }
+  }
+  ${CONTENT_MODEL_FRAGMENT}
+`
+
+export {
+  ADD_SCALAR_FIELD,
+  DELETE_FIELD,
+  ADD_RELATION_FIELD,
+  ADD_CONTENT_MODEL,
+  REORDER_FIELD,
+}

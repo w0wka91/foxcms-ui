@@ -17,6 +17,7 @@
     "pluralize": "^8.0.0",
     "react": "^16.8.6",
     "react-atomicus": "^1.5.0",
+    "react-beautiful-dnd": "^12.2.0",
     "react-codemirror": "^1.0.0",
     "react-dom": "^16.8.6",
     "react-hook-form": "^4.4.8",
@@ -30,7 +31,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "apollo:generate": "apollo codegen:generate --includes=src/**/* --endpoint http://localhost:8080/graphql --target typescript --outputFlat src/generated"
+    "apollo:generate": "apollo codegen:generate --includes=src/**/* --excludes=src/gql/utils.ts --endpoint http://localhost:8080/graphql --target typescript --outputFlat src/generated"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -55,6 +56,7 @@
     "@types/pluralize": "^0.0.29",
     "@types/reach__router": "^1.2.4",
     "@types/react": "16.8.23",
+    "@types/react-beautiful-dnd": "^11.0.4",
     "@types/react-codemirror": "^1.0.3",
     "@types/react-dom": "16.8.4",
     "@types/react-router-dom": "^4.3.4",
