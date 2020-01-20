@@ -38,7 +38,9 @@ const ContentOverview: React.FC<ContentOverviewProps> = ({
           title={modelData.contentModel.name}
           subtitle={`#${modelData.contentModel.apiName}`}
         >
-          <Button>
+          <Button
+            onClick={() => navigate(`./${modelData?.contentModel?.id}/create`)}
+          >
             <Button.Icon name="plus" />
             <span>Create {modelData.contentModel.name}</span>
           </Button>
