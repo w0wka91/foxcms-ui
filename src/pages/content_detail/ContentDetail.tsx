@@ -82,6 +82,7 @@ const ContentDetail: React.FC<ContentDetailProps> = ({
             className={css`
               flex-basis: ${!contentId ? '100%' : '70%'};
               padding: 2.4rem 3.2rem;
+              overflow: visible;
             `}
           >
             <form
@@ -98,7 +99,9 @@ const ContentDetail: React.FC<ContentDetailProps> = ({
                 f =>
                   isUserField(f) && (
                     <DynamicInput
+                      key={f.id}
                       field={f}
+                      contentClient={contentClient}
                       value={content ? content[f.apiName] : undefined}
                       formContext={formProps}
                     />

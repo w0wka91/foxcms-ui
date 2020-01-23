@@ -21,9 +21,30 @@ const RELATION_FIELD_FRAGMENT = gql`
     relationType: type
     relatesTo {
       id
+      apiName
       name
+      previewField {
+        name
+        apiName
+      }
+      fields {
+        name
+        apiName
+        position
+        ... on ScalarField {
+          ...ScalarFieldParts
+        }
+        ... on ListField {
+          id
+          type
+        }
+        ... on RelationField {
+          relationType: type
+        }
+      }
     }
   }
+  ${SCALAR_FIELD_FRAGMENT}
 `
 
 const CONTENT_MODEL_FRAGMENT = gql`
@@ -33,6 +54,10 @@ const CONTENT_MODEL_FRAGMENT = gql`
     name
     description
     updatedAt
+    previewField {
+      name
+      apiName
+    }
     fields {
       name
       apiName

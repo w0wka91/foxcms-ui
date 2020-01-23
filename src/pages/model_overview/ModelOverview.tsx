@@ -68,9 +68,12 @@ function reducer(state: State, action: Action): State {
 }
 
 const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
-  const { data, loading } = useQuery<ContentModels>(CONTENT_MODELS, {
-    variables: { branchId },
-  })
+  const { data, loading, error, networkStatus } = useQuery<ContentModels>(
+    CONTENT_MODELS,
+    {
+      variables: { branchId },
+    }
+  )
   const [state, dispatch] = useReducer(reducer, {
     contentModelForm: {
       isVisible: false,
@@ -79,6 +82,7 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
       isVisible: false,
     },
   })
+  console.log('HALLO', data?.contentModels, error, networkStatus, loading)
   if (loading) return null
   return (
     <>

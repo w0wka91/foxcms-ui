@@ -1,12 +1,21 @@
 import React from 'react'
-import { UserField, isScalarField } from '../../types/foxcms.global'
+import {
+  UserField,
+  isScalarField,
+  RelationField,
+  isRelationField,
+} from '../../types/foxcms.global'
 import { FormContextValues, Controller } from 'react-hook-form'
-import { DisplayType, Concern } from '../../generated/globalTypes'
+import { DisplayType, Concern, RelationType } from '../../generated/globalTypes'
 import { Input, Datepicker, Label, Checkbox, colors } from 'react-atomicus'
 import Dayjs from 'dayjs'
 import { Editor } from '@tinymce/tinymce-react'
 import CodeMirror from 'react-codemirror'
 import { css } from 'emotion'
+import { useQuery } from '@apollo/react-hooks'
+import { generateQuery } from '../../gql/utils'
+import Select from 'react-select'
+import pluralize from 'pluralize'
 
 interface DynamicInputProps {
   field: UserField
@@ -15,16 +24,82 @@ interface DynamicInputProps {
     FormContextValues<any>,
     'handleSubmit' | 'formState' | 'watch'
   >
+  contentClient: any
 }
 
-const DynamicInput = ({ field, value, formContext }: DynamicInputProps) => {
-  let component = <span>{field.name}</span>
+interface RelationInputProps {
+  field: RelationField
+  value: any
+  formContext: Omit<
+    FormContextValues<any>,
+    'handleSubmit' | 'formState' | 'watch'
+  >
+  contentClient: any
+}
+
+const RelationInput = ({
+  field,
+  value,
+  formContext,
+  contentClient,
+}: RelationInputProps) => {
+  const { data: contentData } = useQuery(generateQuery(field.relatesTo), {
+    client: contentClient,
+  })
+  const isMulti =
+    field.relationType === RelationType.ONE_TO_MANY ||
+    field.relationType === RelationType.MANY_TO_MANY
+  const content =
+    contentData && contentData[pluralize(field.relatesTo.apiName).toLowerCase()]
+  const options =
+    contentData &&
+    content.map((entry: any) => ({
+      value: entry.id,
+      label: entry[field.relatesTo.previewField.apiName],
+    }))
+  let defaultValue
+  if (isMulti && Array.isArray(value)) {
+    defaultValue = value.map((val: any) => ({
+      value: val.id,
+      label: options?.find((opt: any) => opt.value === val.id)?.label,
+      relatesToModel: field.relatesTo,
+    }))
+  } else {
+    defaultValue = value && {
+      value: value.id,
+      label: options?.find((opt: any) => opt.value === value.id)?.label,
+      relatesToModel: field.relatesTo,
+    }
+  }
+  return options ? (
+    <div>
+      <Label>{field.name}</Label>
+      <Controller
+        isMulti={isMulti}
+        defaultValue={defaultValue}
+        name={field.apiName}
+        as={Select}
+        options={options}
+        placeholder={`Select a ${field.relatesTo.name}`}
+        control={formContext.control}
+        onChange={([selected]) => ({ value: selected })}
+      />
+    </div>
+  ) : null
+}
+
+const DynamicInput = ({
+  field,
+  value,
+  formContext,
+  contentClient,
+}: DynamicInputProps) => {
   if (isScalarField(field)) {
     switch (field.type) {
       case DisplayType.SINGLE_LINE_TEXT:
       case DisplayType.INTEGER:
       case DisplayType.FLOAT:
-        component = (
+        return (
           <Input
             defaultValue={value}
             ref={formContext.register({
@@ -59,9 +134,8 @@ const DynamicInput = ({ field, value, formContext }: DynamicInputProps) => {
             label={field.name}
           />
         )
-        break
       case DisplayType.DATE:
-        component = (
+        return (
           <Controller
             defaultValue={value}
             control={formContext.control}
@@ -70,10 +144,9 @@ const DynamicInput = ({ field, value, formContext }: DynamicInputProps) => {
             as={<Datepicker label={field.name} format="DD.MM.YYYY" />}
           />
         )
-        break
       case DisplayType.MULTI_LINE_TEXT:
-        component = (
-          <>
+        return (
+          <div>
             <Label>{field.name}</Label>
             <Controller
               control={formContext.control}
@@ -98,11 +171,10 @@ const DynamicInput = ({ field, value, formContext }: DynamicInputProps) => {
                 />
               }
             />
-          </>
+          </div>
         )
-        break
       case DisplayType.CHECKBOX:
-        component = (
+        return (
           <Controller
             control={formContext.control}
             name={field.apiName}
@@ -111,10 +183,9 @@ const DynamicInput = ({ field, value, formContext }: DynamicInputProps) => {
             label={field.name}
           />
         )
-        break
       case DisplayType.JSON_EDITOR:
-        component = (
-          <>
+        return (
+          <div>
             <Label>{field.name}</Label>
             <Controller
               name={field.apiName}
@@ -133,11 +204,20 @@ const DynamicInput = ({ field, value, formContext }: DynamicInputProps) => {
                 />
               }
             />
-          </>
+          </div>
         )
     }
+  } else if (isRelationField(field)) {
+    return (
+      <RelationInput
+        field={field}
+        value={value}
+        formContext={formContext}
+        contentClient={contentClient}
+      />
+    )
   }
-  return <div key={field.id}>{component}</div>
+  return <span></span>
 }
 
 export { DynamicInput }

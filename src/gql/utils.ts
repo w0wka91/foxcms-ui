@@ -1,23 +1,56 @@
-import { ContentModel_contentModel } from '../generated/ContentModel'
+import {
+  ContentModel_contentModel,
+  ContentModel_contentModel_fields_RelationField_relatesTo,
+} from '../generated/ContentModel'
 import gql from 'graphql-tag'
 import pluralize from 'pluralize'
-import { isUserField, isScalarField, ScalarField } from '../types/foxcms.global'
+import {
+  isUserField,
+  isScalarField,
+  ScalarField,
+  isRelationField,
+} from '../types/foxcms.global'
 import { DisplayType } from '../generated/globalTypes'
 
+interface Field {
+  __typename?: string
+  apiName: string
+}
+
+const queryFields = (
+  contentModel:
+    | ContentModel_contentModel
+    | ContentModel_contentModel_fields_RelationField_relatesTo
+    | null
+    | undefined
+) => {
+  let fields: Array<Field> = contentModel?.fields ?? [{ apiName: 'id' }]
+  const scalarFields = fields
+    .filter(f => f.__typename !== 'RelationField')
+    .map(f => f.apiName)
+  const relationFields = fields
+    .filter(f => f.__typename === 'RelationField')
+    .map(f => `${f.apiName} { id } `)
+  return scalarFields.concat(relationFields)
+}
+
 const generateQuery = (
-  contentModel: ContentModel_contentModel | null | undefined,
+  contentModel:
+    | ContentModel_contentModel
+    | ContentModel_contentModel_fields_RelationField_relatesTo
+    | null
+    | undefined,
   contentId?: string
 ) => {
-  const cols = contentModel?.fields.map(f => `${f.apiName} `)
+  const fieldQuery = queryFields(contentModel)
   if (contentId) {
     return gql`
     query {
         ${contentModel?.apiName.toLowerCase() ??
           'modelName'}(where: {id: "${contentId}"}) {
-            ${cols}
+            ${fieldQuery}
         }
-    }
-    `
+    }`
   } else {
     const pluralizedApiName = pluralize(
       contentModel?.apiName ?? 'modelName'
@@ -25,10 +58,9 @@ const generateQuery = (
     return gql`
       query {
           ${pluralizedApiName} {
-            ${cols}
+            ${fieldQuery}
           }
-      }
-      `
+      }`
   }
 }
 
@@ -57,20 +89,35 @@ const generateMutation = (
     .map(
       f => `${f.apiName}: ${normalizeValue(f as ScalarField, data[f.apiName])}`
     )
+  const relationFieldData = contentModel?.fields
+    .filter(f => isRelationField(f) && data[f.apiName])
+    .map(f => {
+      if (Array.isArray(data[f.apiName])) {
+        return `${f.apiName}: { ${contentId ? 'set' : 'connect'}: [ ${data[
+          f.apiName
+        ]
+          .map((val: any) => `{ id: "${val.value}" }`)
+          .join(',')} ] }`
+      } else {
+        return `${f.apiName}: { connect: { id: "${data[f.apiName].value}" } }`
+      }
+    })
+  const updateData = scalarFieldData?.concat(relationFieldData ?? []).join(', ')
   if (!contentId) {
     return gql`
     mutation {
-      create${contentModel?.apiName}(data: { ${scalarFieldData?.join(', ') ??
+      create${contentModel?.apiName}(data: { ${updateData ??
       'placeholder: placeholder'}, status: Published }) {
         id
       }
     }`
   } else {
+    const fieldQuery = queryFields(contentModel)
     return gql`
     mutation {
-      update${contentModel?.apiName}(data: { ${scalarFieldData?.join(', ') ??
+      update${contentModel?.apiName}(data: { ${updateData ??
       'placeholder: placeholder'}, status: Published }, where: { id: "${contentId}"}) {
-        id createdAt updatedAt status ${Object.keys(data).join(' ')}
+        id createdAt updatedAt status ${fieldQuery}
       }
     }`
   }

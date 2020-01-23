@@ -53,7 +53,9 @@ const ContentOverview: React.FC<ContentOverviewProps> = ({
         >
           <Table>
             <Table.Header>
-              <Table.HeaderCell>Id</Table.HeaderCell>
+              <Table.HeaderCell>
+                {modelData.contentModel.previewField.name}
+              </Table.HeaderCell>
             </Table.Header>
             <tbody>
               {contentData &&
@@ -64,7 +66,13 @@ const ContentOverview: React.FC<ContentOverviewProps> = ({
                     key={entry.id}
                     onClick={() => navigate(`./${modelId}/edit/${entry.id}`)}
                   >
-                    <Table.Cell>{entry.id}</Table.Cell>
+                    <Table.Cell>
+                      {
+                        entry[
+                          modelData?.contentModel?.previewField.apiName ?? ''
+                        ]
+                      }
+                    </Table.Cell>
                   </Table.Row>
                 ))}
             </tbody>

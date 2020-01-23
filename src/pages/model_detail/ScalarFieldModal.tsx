@@ -49,6 +49,7 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
         query: CONTENT_MODEL,
         variables: { modelId: contentModel.id },
       })
+      console.log('update', data)
       const fields = data?.contentModel?.fields?.concat(addScalarField)
       cache.writeQuery({
         query: CONTENT_MODEL,
@@ -187,6 +188,7 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
           />
           <Controller
             name="list"
+            disabled={true}
             control={control}
             as={Toggle}
             label="Allow multiple values"
