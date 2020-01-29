@@ -29,56 +29,46 @@ const ContentOverview: React.FC<ContentOverviewProps> = ({
   if (loading) return null
   return modelData?.contentModel ? (
     <>
-      <div
+      <PageHeader
+        title={modelData.contentModel.name}
+        subtitle={`#${modelData.contentModel.apiName}`}
+      >
+        <Button
+          onClick={() => navigate(`./${modelData?.contentModel?.id}/create`)}
+        >
+          <Button.Icon name="plus" />
+          <span>Create {modelData.contentModel.name}</span>
+        </Button>
+      </PageHeader>
+
+      <Card
         className={css`
-          margin-top: 4.8rem;
+          min-width: 96rem;
         `}
       >
-        <PageHeader
-          title={modelData.contentModel.name}
-          subtitle={`#${modelData.contentModel.apiName}`}
-        >
-          <Button
-            onClick={() => navigate(`./${modelData?.contentModel?.id}/create`)}
-          >
-            <Button.Icon name="plus" />
-            <span>Create {modelData.contentModel.name}</span>
-          </Button>
-        </PageHeader>
-
-        <Card
-          className={css`
-            min-width: 96rem;
-          `}
-        >
-          <Table>
-            <Table.Header>
-              <Table.HeaderCell>
-                {modelData.contentModel.previewField.name}
-              </Table.HeaderCell>
-            </Table.Header>
-            <tbody>
-              {contentData &&
-                contentData[
-                  pluralize(modelData.contentModel.apiName).toLowerCase()
-                ].map((entry: any) => (
-                  <Table.Row
-                    key={entry.id}
-                    onClick={() => navigate(`./${modelId}/edit/${entry.id}`)}
-                  >
-                    <Table.Cell>
-                      {
-                        entry[
-                          modelData?.contentModel?.previewField.apiName ?? ''
-                        ]
-                      }
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-            </tbody>
-          </Table>
-        </Card>
-      </div>
+        <Table>
+          <Table.Header>
+            <Table.HeaderCell>
+              {modelData.contentModel.previewField.name}
+            </Table.HeaderCell>
+          </Table.Header>
+          <tbody>
+            {contentData &&
+              contentData[
+                pluralize(modelData.contentModel.apiName).toLowerCase()
+              ].map((entry: any) => (
+                <Table.Row
+                  key={entry.id}
+                  onClick={() => navigate(`./${modelId}/edit/${entry.id}`)}
+                >
+                  <Table.Cell>
+                    {entry[modelData?.contentModel?.previewField.apiName ?? '']}
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+          </tbody>
+        </Table>
+      </Card>
     </>
   ) : null
 }

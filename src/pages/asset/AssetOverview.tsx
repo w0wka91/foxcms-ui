@@ -140,42 +140,36 @@ const AssetOverview: React.FC<AssetOverviewProps> = ({ contentClient }) => {
   )
   return (
     <>
+      <PageHeader title="Assets">
+        <Button onClick={() => cloudinaryWidget.open()}>Upload asset</Button>
+      </PageHeader>
       <div
         className={css`
-          margin-top: 4.8rem;
+          display: flex;
+          align-items: flex-start;
+          width: 96rem;
+          flex-wrap: wrap;
         `}
       >
-        <PageHeader title="Assets">
-          <Button onClick={() => cloudinaryWidget.open()}>Upload asset</Button>
-        </PageHeader>
-        <div
-          className={css`
-            display: flex;
-            align-items: flex-start;
-            width: 96rem;
-            flex-wrap: wrap;
-          `}
-        >
-          {data?.assets.map(asset => (
-            <div
+        {data?.assets.map(asset => (
+          <div
+            key={asset.public_id}
+            className={css`
+              margin: 0.4rem;
+              border-radius: 3px;
+              overflow: hidden;
+              cursor: pointer;
+            `}
+          >
+            <Image
               key={asset.public_id}
-              className={css`
-                margin: 0.4rem;
-                border-radius: 3px;
-                overflow: hidden;
-                cursor: pointer;
-              `}
+              cloudName="foxcms"
+              publicId={asset.public_id}
             >
-              <Image
-                key={asset.public_id}
-                cloudName="foxcms"
-                publicId={asset.public_id}
-              >
-                <Transformation height="192" crop="scale" />
-              </Image>
-            </div>
-          ))}
-        </div>
+              <Transformation height="192" crop="scale" />
+            </Image>
+          </div>
+        ))}
       </div>
     </>
   )

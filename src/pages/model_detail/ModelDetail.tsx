@@ -167,191 +167,185 @@ const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
         field={state.deleteFieldModal.field}
         onClose={() => dispatch({ type: 'close-modal', modal: 'DELETE_FIELD' })}
       />
-      <div
-        className={css`
-          margin-top: 4.8rem;
-        `}
+      <PageHeader
+        title={data.contentModel.name}
+        subtitle={`#${data.contentModel.apiName}`}
       >
-        <PageHeader
-          title={data.contentModel.name}
-          subtitle={`#${data.contentModel.apiName}`}
-        >
-          <Dropdown
-            label="Create field"
-            icon="chevron-down"
-            onSelect={item => {
-              if (item.key === 'RELATION') {
-                dispatch({
-                  type: 'create-relation-field',
-                })
-              } else {
-                dispatch({
-                  type: 'create-scalar-field',
-                  displayType: item.key as DisplayType,
-                })
-              }
-            }}
-            menuItems={[
-              {
-                key: DisplayType.SINGLE_LINE_TEXT,
-                icon: typeIcon(DisplayType.SINGLE_LINE_TEXT),
-                label: 'Single line text',
-              },
-              {
-                key: DisplayType.MULTI_LINE_TEXT,
-                icon: typeIcon(DisplayType.MULTI_LINE_TEXT),
-                label: 'Multi line text',
-              },
-              {
-                key: DisplayType.INTEGER,
-                icon: typeIcon(DisplayType.INTEGER),
-                label: 'Integer',
-              },
-              {
-                key: DisplayType.FLOAT,
-                icon: typeIcon(DisplayType.FLOAT),
-                label: 'Float',
-              },
-              {
-                key: DisplayType.CHECKBOX,
-                icon: typeIcon(DisplayType.CHECKBOX),
-                label: 'Checkbox',
-              },
-              {
-                key: DisplayType.DATE,
-                icon: typeIcon(DisplayType.DATE),
-                label: 'Date',
-              },
-              {
-                key: SystemModel.ASSET,
-                icon: typeIcon(SystemModel.ASSET),
-                label: 'Asset',
-              },
-              {
-                key: DisplayType.JSON_EDITOR,
-                icon: typeIcon(DisplayType.JSON_EDITOR),
-                label: 'JSON',
-              },
-              {
-                key: 'RELATION',
-                icon: 'git-merge',
-                label: 'Relation',
-              },
-            ]}
-          />
-        </PageHeader>
-        <Button
-          onClick={() => dispatch({ type: 'toggle-system-fields' })}
-          hierarchy="tertiary"
-          intent="primary"
-          className={css`
-            color: ${colors.grey700};
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.2rem;
-            padding: 0;
-            &:focus {
-              outline: none;
-            }
-          `}
-        >
-          <span>System fields</span>
-          <Button.Icon
-            name={state.showSystemFields ? 'chevron-up' : 'chevron-down'}
-          />
-        </Button>
-        <div
-          className={css`
-            max-height: ${state.showSystemFields ? '1000px' : '0px'};
-            visibility: ${state.showSystemFields ? 'visible' : 'hidden'};
-            opacity: ${state.showSystemFields ? '1' : '0'};
-          `}
-        >
-          {data?.contentModel?.fields
-            .filter(f => isSystemField(f))
-            .map(field => (
-              <FieldRow key={field.apiName} field={field} />
-            ))}
-        </div>
-        <DragDropContext
-          onDragEnd={res => {
-            if (res.destination?.index) {
-              const systemFields = data?.contentModel?.fields.filter(f =>
-                isSystemField(f)
-              )
-              const userFields = data?.contentModel?.fields.filter(f =>
-                isUserField(f)
-              )
-
-              const reorderedUserFields = Array.from(userFields ?? [])
-              const [removed] = reorderedUserFields.splice(
-                res.source.index - 1,
-                1
-              )
-              reorderedUserFields.splice(res.destination.index - 1, 0, removed)
-
-              reorderField({
-                variables: {
-                  modelId: data.contentModel?.id,
-                  from: res.source.index,
-                  to: res.destination?.index,
-                },
-                optimisticResponse: {
-                  __typename: 'Mutation',
-                  reorderField: {
-                    ...data.contentModel,
-                    fields: systemFields?.concat(reorderedUserFields),
-                  },
-                },
+        <Dropdown
+          label="Create field"
+          icon="chevron-down"
+          onSelect={item => {
+            if (item.key === 'RELATION') {
+              dispatch({
+                type: 'create-relation-field',
+              })
+            } else {
+              dispatch({
+                type: 'create-scalar-field',
+                displayType: item.key as DisplayType,
               })
             }
           }}
-        >
-          <Droppable droppableId="fields-droppable">
-            {provided => (
-              <div
-                ref={provided.innerRef}
-                className={css`
-                  min-width: 96rem;
-                `}
-                {...provided.droppableProps}
-              >
-                {data?.contentModel?.fields
-                  .filter(f => isUserField(f))
-                  .map(field => (
-                    <Draggable
-                      key={field.apiName}
-                      draggableId={field.apiName}
-                      index={field.position}
-                    >
-                      {provided => (
-                        <FieldRow
-                          field={field}
-                          onDelete={field => {
-                            dispatch({ type: 'delete-field', field, modelId })
-                          }}
-                          onEdit={field => {
-                            if (
-                              isListField(field) ||
-                              isAssetField(field) ||
-                              isScalarField(field)
-                            ) {
-                              dispatch({ type: 'edit-scalar-field', field })
-                            }
-                          }}
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        />
-                      )}
-                    </Draggable>
-                  ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+          menuItems={[
+            {
+              key: DisplayType.SINGLE_LINE_TEXT,
+              icon: typeIcon(DisplayType.SINGLE_LINE_TEXT),
+              label: 'Single line text',
+            },
+            {
+              key: DisplayType.MULTI_LINE_TEXT,
+              icon: typeIcon(DisplayType.MULTI_LINE_TEXT),
+              label: 'Multi line text',
+            },
+            {
+              key: DisplayType.INTEGER,
+              icon: typeIcon(DisplayType.INTEGER),
+              label: 'Integer',
+            },
+            {
+              key: DisplayType.FLOAT,
+              icon: typeIcon(DisplayType.FLOAT),
+              label: 'Float',
+            },
+            {
+              key: DisplayType.CHECKBOX,
+              icon: typeIcon(DisplayType.CHECKBOX),
+              label: 'Checkbox',
+            },
+            {
+              key: DisplayType.DATE,
+              icon: typeIcon(DisplayType.DATE),
+              label: 'Date',
+            },
+            {
+              key: SystemModel.ASSET,
+              icon: typeIcon(SystemModel.ASSET),
+              label: 'Asset',
+            },
+            {
+              key: DisplayType.JSON_EDITOR,
+              icon: typeIcon(DisplayType.JSON_EDITOR),
+              label: 'JSON',
+            },
+            {
+              key: 'RELATION',
+              icon: 'git-merge',
+              label: 'Relation',
+            },
+          ]}
+        />
+      </PageHeader>
+      <Button
+        onClick={() => dispatch({ type: 'toggle-system-fields' })}
+        hierarchy="tertiary"
+        intent="primary"
+        className={css`
+          color: ${colors.grey700};
+          display: flex;
+          align-items: center;
+          margin-bottom: 1.2rem;
+          padding: 0;
+          &:focus {
+            outline: none;
+          }
+        `}
+      >
+        <span>System fields</span>
+        <Button.Icon
+          name={state.showSystemFields ? 'chevron-up' : 'chevron-down'}
+        />
+      </Button>
+      <div
+        className={css`
+          max-height: ${state.showSystemFields ? '1000px' : '0px'};
+          visibility: ${state.showSystemFields ? 'visible' : 'hidden'};
+          opacity: ${state.showSystemFields ? '1' : '0'};
+        `}
+      >
+        {data?.contentModel?.fields
+          .filter(f => isSystemField(f))
+          .map(field => (
+            <FieldRow key={field.apiName} field={field} />
+          ))}
       </div>
+      <DragDropContext
+        onDragEnd={res => {
+          if (res.destination?.index) {
+            const systemFields = data?.contentModel?.fields.filter(f =>
+              isSystemField(f)
+            )
+            const userFields = data?.contentModel?.fields.filter(f =>
+              isUserField(f)
+            )
+
+            const reorderedUserFields = Array.from(userFields ?? [])
+            const [removed] = reorderedUserFields.splice(
+              res.source.index - 1,
+              1
+            )
+            reorderedUserFields.splice(res.destination.index - 1, 0, removed)
+
+            reorderField({
+              variables: {
+                modelId: data.contentModel?.id,
+                from: res.source.index,
+                to: res.destination?.index,
+              },
+              optimisticResponse: {
+                __typename: 'Mutation',
+                reorderField: {
+                  ...data.contentModel,
+                  fields: systemFields?.concat(reorderedUserFields),
+                },
+              },
+            })
+          }
+        }}
+      >
+        <Droppable droppableId="fields-droppable">
+          {provided => (
+            <div
+              ref={provided.innerRef}
+              className={css`
+                min-width: 96rem;
+              `}
+              {...provided.droppableProps}
+            >
+              {data?.contentModel?.fields
+                .filter(f => isUserField(f))
+                .map(field => (
+                  <Draggable
+                    key={field.apiName}
+                    draggableId={field.apiName}
+                    index={field.position}
+                  >
+                    {provided => (
+                      <FieldRow
+                        field={field}
+                        onDelete={field => {
+                          dispatch({ type: 'delete-field', field, modelId })
+                        }}
+                        onEdit={field => {
+                          if (
+                            isListField(field) ||
+                            isAssetField(field) ||
+                            isScalarField(field)
+                          ) {
+                            dispatch({ type: 'edit-scalar-field', field })
+                          }
+                        }}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      />
+                    )}
+                  </Draggable>
+                ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </>
   ) : null
 }

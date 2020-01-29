@@ -85,7 +85,6 @@ let ProjectList: React.FC<RouteComponentProps> = () => {
     >
       <div
         className={css`
-          margin-top: 4.8rem;
           width: 76.8rem;
         `}
       >
@@ -227,9 +226,7 @@ let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
           border-right: 1px solid ${colors.grey200};
           background-color: ${colors.blue700};
         `}
-      >
-        SIDEBAR1
-      </div>
+      ></div>
     </>
   )
 }

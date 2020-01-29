@@ -53,64 +53,58 @@ const ContentDetail: React.FC<ContentDetailProps> = ({
   if (loading) return null
   return modelData?.contentModel && (content || !contentId) ? (
     <>
+      <PageHeader
+        title={modelData.contentModel.name}
+        subtitle={contentId ? `#${contentId}` : ''}
+      >
+        <Button
+          type="submit"
+          form="content-data-form"
+          disabled={!formState.dirty}
+        >
+          Save
+        </Button>
+      </PageHeader>
       <div
         className={css`
-          margin-top: 4.8rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          min-width: 96rem;
         `}
       >
-        <PageHeader
-          title={modelData.contentModel.name}
-          subtitle={contentId ? `#${contentId}` : ''}
-        >
-          <Button
-            type="submit"
-            form="content-data-form"
-            disabled={!formState.dirty}
-          >
-            Save
-          </Button>
-        </PageHeader>
-        <div
+        <Card
           className={css`
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            min-width: 96rem;
+            flex-basis: ${!contentId ? '100%' : '70%'};
+            padding: 2.4rem 3.2rem;
+            overflow: visible;
           `}
         >
-          <Card
+          <form
+            noValidate
+            id="content-data-form"
+            onSubmit={handleSubmit(onSubmit)}
             className={css`
-              flex-basis: ${!contentId ? '100%' : '70%'};
-              padding: 2.4rem 3.2rem;
-              overflow: visible;
+              & > * {
+                margin-bottom: 1.2rem;
+              }
             `}
           >
-            <form
-              noValidate
-              id="content-data-form"
-              onSubmit={handleSubmit(onSubmit)}
-              className={css`
-                & > * {
-                  margin-bottom: 1.2rem;
-                }
-              `}
-            >
-              {modelData.contentModel.fields.map(
-                f =>
-                  isUserField(f) && (
-                    <DynamicInput
-                      key={f.id}
-                      field={f}
-                      contentClient={contentClient}
-                      value={content ? content[f.apiName] : undefined}
-                      formContext={formProps}
-                    />
-                  )
-              )}
-            </form>
-          </Card>
-          {!!contentId && <ContentMetadata content={content} />}
-        </div>
+            {modelData.contentModel.fields.map(
+              f =>
+                isUserField(f) && (
+                  <DynamicInput
+                    key={f.id}
+                    field={f}
+                    contentClient={contentClient}
+                    value={content ? content[f.apiName] : undefined}
+                    formContext={formProps}
+                  />
+                )
+            )}
+          </form>
+        </Card>
+        {!!contentId && <ContentMetadata content={content} />}
       </div>
     </>
   ) : null
