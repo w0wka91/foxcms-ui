@@ -1,7 +1,13 @@
 import { css } from 'emotion'
-import React, { useMemo } from 'react'
+import React, { useMemo, PropsWithChildren } from 'react'
 import { Button, Card, colors, Icon } from 'react-atomicus'
-import { navigate, RouteComponentProps, Router } from '@reach/router'
+import {
+  navigate,
+  RouteComponentProps,
+  Router,
+  Link,
+  redirectTo,
+} from '@reach/router'
 import PageHeader from './PageHeader'
 import { useQuery } from '@apollo/react-hooks'
 import gql from 'graphql-tag'
@@ -18,6 +24,9 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
 import { ContentDetail } from '../pages/content_detail/ContentDetail'
 import { AssetOverview } from '../pages/asset/AssetOverview'
+import { ContentModel } from '../generated/ContentModel'
+import { CONTENT_MODEL, CONTENT_MODELS } from '../gql/queries'
+import { ContentModels } from '../generated/ContentModels'
 
 Dayjs.locale('en')
 
@@ -38,7 +47,7 @@ const AuthenticatedApp: React.FC<RouteComponentProps> = () => {
           border-bottom: 1px solid ${colors.grey200};
         `}
       >
-        Header
+        LOGO
       </div>
       <Router
         className={css`
@@ -226,8 +235,142 @@ let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
           border-right: 1px solid ${colors.grey200};
           background-color: ${colors.blue700};
         `}
-      ></div>
+      >
+        <Menu branchId={branchId} />
+      </div>
     </>
+  )
+}
+
+interface MenuProps {
+  branchId?: string
+}
+
+const Menu: React.FC<MenuProps> = ({ branchId }) => {
+  const { data, loading, error, networkStatus } = useQuery<ContentModels>(
+    CONTENT_MODELS,
+    {
+      variables: { branchId },
+    }
+  )
+  if (loading) return null
+
+  return data ? (
+    <nav
+      className={css`
+        padding-top: 9.6rem;
+      `}
+    >
+      <NavLink
+        title="Content models"
+        to="models"
+        icon="layers"
+        sublinks={data.contentModels
+          .filter(cm => cm.id !== '0')
+          .map(cm => ({ to: cm.id, title: cm.name }))}
+      />
+      <NavLink
+        title="Content"
+        to="content"
+        icon="columns"
+        sublinks={data.contentModels
+          .filter(cm => cm.id !== '0')
+          .map(cm => ({ to: cm.id, title: cm.name }))}
+      />
+      <NavLink title="Assets" to="assets" icon="image" />
+    </nav>
+  ) : null
+}
+
+interface Sublink {
+  title: string
+  to: string
+}
+
+interface NavLinkProps {
+  title: string
+  to: string
+  icon?: string
+  sublinks?: Sublink[]
+}
+
+const NavLink: React.FC<PropsWithChildren<NavLinkProps>> = ({
+  title,
+  to,
+  icon,
+  sublinks,
+}) => {
+  return (
+    <div>
+      <Link
+        to={to}
+        getProps={({ isPartiallyCurrent }) => {
+          return {
+            style: {
+              background: isPartiallyCurrent
+                ? 'rgba(255, 255, 255, 0.1)'
+                : 'transparent',
+              opacity: isPartiallyCurrent ? '1' : '.4',
+            },
+          }
+        }}
+        className={css`
+          display: flex;
+          padding: 2.4rem 3.2rem;
+          align-items: center;
+          color: ${colors.grey100};
+          font-size: 1.8rem;
+          text-decoration: none;
+        `}
+      >
+        {icon && (
+          <Icon
+            name={icon}
+            size="2.4rem"
+            className={css`
+              margin-right: 1.6rem;
+            `}
+          />
+        )}
+        <span>{title}</span>
+      </Link>
+      <div
+        className={css`
+          display: flex;
+          flex-direction: column;
+        `}
+      >
+        {sublinks?.map(sublink => (
+          <Link
+            key={to + sublink.to}
+            className={css`
+              padding: 1.2rem 6.4rem;
+              text-decoration: none;
+              color: ${colors.grey100};
+              display: flex;
+              align-items: center;
+            `}
+            getProps={({ isCurrent }) => {
+              return {
+                style: {
+                  opacity: isCurrent ? '1' : '.4',
+                },
+              }
+            }}
+            to={to + '/' + sublink.to}
+          >
+            <Icon
+              name="chevron-right"
+              size="1.2rem"
+              className={css`
+                margin-right: 1.2rem;
+              `}
+            />
+            {sublink.title}
+          </Link>
+        ))}
+      </div>
+    </div>
   )
 }
 

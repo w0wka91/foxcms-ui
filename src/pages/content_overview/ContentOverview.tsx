@@ -1,5 +1,5 @@
 import { RouteComponentProps, navigate } from '@reach/router'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import PageHeader from '../../components/PageHeader'
 import { Button, Card } from 'react-atomicus'
@@ -19,15 +19,25 @@ const ContentOverview: React.FC<ContentOverviewProps> = ({
   modelId,
   contentClient,
 }) => {
-  const { data: modelData, loading } = useQuery<ContentModel>(CONTENT_MODEL, {
+  const {
+    data: modelData,
+    loading: modelLoading,
+    refetch: refetchModel,
+  } = useQuery<ContentModel>(CONTENT_MODEL, {
     variables: { modelId },
   })
-  const { data: contentData } = useQuery(
+  const { data: contentData, loading: contentLoading } = useQuery(
     generateQuery(modelData?.contentModel),
-    { client: contentClient }
+    {
+      client: contentClient,
+    }
   )
-  if (loading) return null
-  return modelData?.contentModel ? (
+  useEffect(() => {
+    console.log('refetching')
+    refetchModel({ variables: { modelId } })
+  }, [modelId])
+  if (modelLoading || contentLoading) return null
+  return modelData?.contentModel && contentData ? (
     <>
       <PageHeader
         title={modelData.contentModel.name}
