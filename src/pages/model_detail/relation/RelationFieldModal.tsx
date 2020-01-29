@@ -201,6 +201,7 @@ const RelationFieldModal: React.FC<RelationFieldModalProps> = ({
                   />
                 }
                 options={data.contentModels
+                  .filter(model => model.id !== '0')
                   .filter(model => model.id !== contentModel.id)
                   .map(model => ({
                     value: model as ContentModel_contentModel,

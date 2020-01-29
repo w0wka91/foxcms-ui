@@ -120,48 +120,50 @@ const ModelOverview: React.FC<ModelOverviewProps> = ({ branchId }) => {
                 <Table.HeaderCell />
               </Table.Header>
               <tbody>
-                {data.contentModels.map(contentModel => (
-                  <Table.Row
-                    key={contentModel.id}
-                    onClick={() => navigate(`./models/${contentModel.id}`)}
-                  >
-                    <Table.Cell>
-                      <span
-                        className={css`
-                          display: flex;
-                          flex-direction: column;
-                          font-weight: 600;
-                        `}
-                      >
-                        {contentModel.name}
+                {data.contentModels
+                  .filter(model => model.id !== '0')
+                  .map(contentModel => (
+                    <Table.Row
+                      key={contentModel.id}
+                      onClick={() => navigate(`./models/${contentModel.id}`)}
+                    >
+                      <Table.Cell>
                         <span
                           className={css`
-                            color: ${colors.grey300};
-                            font-size: 1.4rem;
+                            display: flex;
+                            flex-direction: column;
+                            font-weight: 600;
                           `}
                         >
-                          {contentModel.apiName}
+                          {contentModel.name}
+                          <span
+                            className={css`
+                              color: ${colors.grey300};
+                              font-size: 1.4rem;
+                            `}
+                          >
+                            {contentModel.apiName}
+                          </span>
                         </span>
-                      </span>
-                    </Table.Cell>
-                    <Table.Cell>{contentModel.fields.length}</Table.Cell>
-                    <Table.Cell
-                      className={css`
-                        max-width: 25.6em;
-                      `}
-                    >
-                      {contentModel.description}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {Dayjs(contentModel.updatedAt)
-                        .locale('en')
-                        .format('MMMM DD, hh:mm A')}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Icon name="corner-up-right" />
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
+                      </Table.Cell>
+                      <Table.Cell>{contentModel.fields.length}</Table.Cell>
+                      <Table.Cell
+                        className={css`
+                          max-width: 25.6em;
+                        `}
+                      >
+                        {contentModel.description}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {Dayjs(contentModel.updatedAt)
+                          .locale('en')
+                          .format('MMMM DD, hh:mm A')}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Icon name="corner-up-right" />
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
               </tbody>
             </Table>
           )}

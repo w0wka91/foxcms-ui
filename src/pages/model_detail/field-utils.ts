@@ -5,6 +5,15 @@ import {
   RelationType,
 } from '../../generated/globalTypes'
 import { ContentModel_contentModel_fields as Field } from '../../generated/ContentModel'
+import {
+  isScalarField,
+  isUserField,
+  isAssetField,
+  FieldSkeleton,
+  FieldType,
+  SystemModel,
+  isFieldSkeleton,
+} from '../../types/foxcms.global'
 
 const fieldName = (field: Field) => {
   switch (field.__typename) {
@@ -14,13 +23,15 @@ const fieldName = (field: Field) => {
     case 'IdField':
       return 'Identifier'
     case 'ScalarField':
-      return typeName(field.type)
+      return fieldTypeName(field)
     case 'ListField':
-      return `${typeName(field.type)} [ ]`
+      return `${fieldTypeName(field)} [ ]`
     case 'PublishStatusField':
       return 'Status'
     case 'RelationField':
       return field.relatesTo.name
+    case 'AssetField':
+      return 'Asset'
   }
 }
 
@@ -38,10 +49,14 @@ const fieldIcon = (field: Field) => {
       return typeIcon(field.type)
     case 'RelationField':
       return 'git-merge'
+    case 'AssetField':
+      return 'image'
+    default:
+      return 'feather'
   }
 }
 
-const typeIcon = (type: DisplayType) => {
+const typeIcon = (type: FieldType) => {
   switch (type) {
     case DisplayType.DATE:
       return 'calendar'
@@ -57,25 +72,35 @@ const typeIcon = (type: DisplayType) => {
       return 'align-left'
     case DisplayType.SINGLE_LINE_TEXT:
       return 'type'
+    case SystemModel.ASSET:
+      return 'image'
+    default:
+      return 'feather'
   }
 }
 
-function typeName(displayType: DisplayType) {
-  switch (displayType) {
-    case DisplayType.CHECKBOX:
-      return 'Checkbox'
-    case DisplayType.DATE:
-      return 'Date'
-    case DisplayType.FLOAT:
-      return 'Float'
-    case DisplayType.INTEGER:
-      return 'Integer'
-    case DisplayType.JSON_EDITOR:
-      return 'Json'
-    case DisplayType.MULTI_LINE_TEXT:
-      return 'Multi line text'
-    case DisplayType.SINGLE_LINE_TEXT:
-      return 'Single line text'
+function fieldTypeName(field: Field | FieldSkeleton) {
+  if ((isUserField(field) && isScalarField(field)) || isFieldSkeleton(field)) {
+    switch (field.type as FieldType) {
+      case DisplayType.CHECKBOX:
+        return 'Checkbox'
+      case DisplayType.DATE:
+        return 'Date'
+      case DisplayType.FLOAT:
+        return 'Float'
+      case DisplayType.INTEGER:
+        return 'Integer'
+      case DisplayType.JSON_EDITOR:
+        return 'Json'
+      case DisplayType.MULTI_LINE_TEXT:
+        return 'Multi line text'
+      case DisplayType.SINGLE_LINE_TEXT:
+        return 'Single line text'
+      case SystemModel.ASSET:
+        return 'Asset'
+    }
+  } else if (isAssetField(field)) {
+    return 'Asset'
   }
 }
 
@@ -112,13 +137,11 @@ const fieldInfoBottom = (field: Field) => {
       break
     case 'ListField':
       return 'List field'
-    default:
-      return 'System field'
   }
 }
 
 export {
-  typeName,
+  fieldTypeName,
   fieldIcon,
   typeIcon,
   fieldName,

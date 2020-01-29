@@ -9,6 +9,7 @@ import {
   isScalarField,
   ScalarField,
   isRelationField,
+  isAssetField,
 } from '../types/foxcms.global'
 import { DisplayType } from '../generated/globalTypes'
 
@@ -26,12 +27,17 @@ const queryFields = (
 ) => {
   let fields: Array<Field> = contentModel?.fields ?? [{ apiName: 'id' }]
   const scalarFields = fields
-    .filter(f => f.__typename !== 'RelationField')
+    .filter(
+      f => f.__typename !== 'RelationField' && f.__typename !== 'AssetField'
+    )
     .map(f => f.apiName)
   const relationFields = fields
     .filter(f => f.__typename === 'RelationField')
     .map(f => `${f.apiName} { id } `)
-  return scalarFields.concat(relationFields)
+  const assetFields = fields
+    .filter(f => f.__typename === 'AssetField')
+    .map(f => `${f.apiName} { id } `)
+  return [...scalarFields, ...relationFields, ...assetFields]
 }
 
 const generateQuery = (
@@ -51,10 +57,8 @@ const generateQuery = (
             ${fieldQuery}
         }
     }`
-  } else {
-    const pluralizedApiName = pluralize(
-      contentModel?.apiName ?? 'modelName'
-    ).toLowerCase()
+  } else if (contentModel) {
+    const pluralizedApiName = pluralize(contentModel.apiName).toLowerCase()
     return gql`
       query {
           ${pluralizedApiName} {
@@ -62,6 +66,11 @@ const generateQuery = (
           }
       }`
   }
+  return gql`
+    query placeholder {
+      id
+    }
+  `
 }
 
 const normalizeValue = (scalarField: ScalarField, val: any) => {
@@ -90,7 +99,7 @@ const generateMutation = (
       f => `${f.apiName}: ${normalizeValue(f as ScalarField, data[f.apiName])}`
     )
   const relationFieldData = contentModel?.fields
-    .filter(f => isRelationField(f) && data[f.apiName])
+    .filter(f => (isRelationField(f) || isAssetField(f)) && data[f.apiName])
     .map(f => {
       if (Array.isArray(data[f.apiName])) {
         return `${f.apiName}: { ${contentId ? 'set' : 'connect'}: [ ${data[

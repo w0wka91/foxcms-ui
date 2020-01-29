@@ -12,6 +12,16 @@ const SCALAR_FIELD_FRAGMENT = gql`
   }
 `
 
+const ASSET_FIELD_FRAGMENT = gql`
+  fragment AssetFieldParts on AssetField {
+    id
+    name
+    apiName
+    position
+    concern
+  }
+`
+
 const RELATION_FIELD_FRAGMENT = gql`
   fragment RelationFieldParts on RelationField {
     id
@@ -69,6 +79,9 @@ const CONTENT_MODEL_FRAGMENT = gql`
         id
         type
       }
+      ... on AssetField {
+        ...AssetFieldParts
+      }
       ... on RelationField {
         ...RelationFieldParts
       }
@@ -76,10 +89,12 @@ const CONTENT_MODEL_FRAGMENT = gql`
   }
   ${SCALAR_FIELD_FRAGMENT}
   ${RELATION_FIELD_FRAGMENT}
+  ${ASSET_FIELD_FRAGMENT}
 `
 
 export {
   SCALAR_FIELD_FRAGMENT,
   RELATION_FIELD_FRAGMENT,
   CONTENT_MODEL_FRAGMENT,
+  ASSET_FIELD_FRAGMENT,
 }

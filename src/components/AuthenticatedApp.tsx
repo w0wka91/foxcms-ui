@@ -17,6 +17,7 @@ import ApolloClient from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { HttpLink } from 'apollo-link-http'
 import { ContentDetail } from '../pages/content_detail/ContentDetail'
+import { AssetOverview } from '../pages/asset/AssetOverview'
 
 Dayjs.locale('en')
 
@@ -197,6 +198,11 @@ let ProjectPage: React.FC<RouteComponentProps<ProjectProps>> = ({
           `}
         >
           <Router>
+            <AssetOverview
+              path="/assets"
+              projectName={project}
+              contentClient={contentClient}
+            />
             <ModelOverview path="/models" branchId={branchId} />
             <ModelDetail path="/models/:modelId" branchId={branchId} />
             <ContentOverview

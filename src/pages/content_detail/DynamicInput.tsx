@@ -2,20 +2,18 @@ import React from 'react'
 import {
   UserField,
   isScalarField,
-  RelationField,
   isRelationField,
+  isAssetField,
 } from '../../types/foxcms.global'
 import { FormContextValues, Controller } from 'react-hook-form'
-import { DisplayType, Concern, RelationType } from '../../generated/globalTypes'
+import { DisplayType, Concern } from '../../generated/globalTypes'
 import { Input, Datepicker, Label, Checkbox, colors } from 'react-atomicus'
 import Dayjs from 'dayjs'
 import { Editor } from '@tinymce/tinymce-react'
 import CodeMirror from 'react-codemirror'
 import { css } from 'emotion'
-import { useQuery } from '@apollo/react-hooks'
-import { generateQuery } from '../../gql/utils'
-import Select from 'react-select'
-import pluralize from 'pluralize'
+import { RelationInput } from './RelationInput'
+import { ImageInput } from './ImageInput'
 
 interface DynamicInputProps {
   field: UserField
@@ -25,67 +23,6 @@ interface DynamicInputProps {
     'handleSubmit' | 'formState' | 'watch'
   >
   contentClient: any
-}
-
-interface RelationInputProps {
-  field: RelationField
-  value: any
-  formContext: Omit<
-    FormContextValues<any>,
-    'handleSubmit' | 'formState' | 'watch'
-  >
-  contentClient: any
-}
-
-const RelationInput = ({
-  field,
-  value,
-  formContext,
-  contentClient,
-}: RelationInputProps) => {
-  const { data: contentData } = useQuery(generateQuery(field.relatesTo), {
-    client: contentClient,
-  })
-  const isMulti =
-    field.relationType === RelationType.ONE_TO_MANY ||
-    field.relationType === RelationType.MANY_TO_MANY
-  const content =
-    contentData && contentData[pluralize(field.relatesTo.apiName).toLowerCase()]
-  const options =
-    contentData &&
-    content.map((entry: any) => ({
-      value: entry.id,
-      label: entry[field.relatesTo.previewField.apiName],
-    }))
-  let defaultValue
-  if (isMulti && Array.isArray(value)) {
-    defaultValue = value.map((val: any) => ({
-      value: val.id,
-      label: options?.find((opt: any) => opt.value === val.id)?.label,
-      relatesToModel: field.relatesTo,
-    }))
-  } else {
-    defaultValue = value && {
-      value: value.id,
-      label: options?.find((opt: any) => opt.value === value.id)?.label,
-      relatesToModel: field.relatesTo,
-    }
-  }
-  return options ? (
-    <div>
-      <Label>{field.name}</Label>
-      <Controller
-        isMulti={isMulti}
-        defaultValue={defaultValue}
-        name={field.apiName}
-        as={Select}
-        options={options}
-        placeholder={`Select a ${field.relatesTo.name}`}
-        control={formContext.control}
-        onChange={([selected]) => ({ value: selected })}
-      />
-    </div>
-  ) : null
 }
 
 const DynamicInput = ({
@@ -207,6 +144,15 @@ const DynamicInput = ({
           </div>
         )
     }
+  } else if (isAssetField(field)) {
+    return (
+      <ImageInput
+        field={field}
+        value={value}
+        formContext={formContext}
+        contentClient={contentClient}
+      />
+    )
   } else if (isRelationField(field)) {
     return (
       <RelationInput

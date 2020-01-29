@@ -19,6 +19,9 @@ import {
   UserField,
   isSystemField,
   isUserField,
+  SystemModel,
+  isAssetField,
+  AssetField,
 } from '../../types/foxcms.global'
 import { DeleteFieldModal } from './DeleteFieldModal'
 import { RelationFieldModal } from './relation/RelationFieldModal'
@@ -33,7 +36,7 @@ interface ModelDetailProps extends RouteComponentProps {
 type Action =
   | { type: 'create-scalar-field'; displayType: DisplayType }
   | { type: 'create-relation-field' }
-  | { type: 'edit-scalar-field'; field: ScalarField | ListField }
+  | { type: 'edit-scalar-field'; field: ScalarField | AssetField | ListField }
   | { type: 'delete-field'; field: UserField; modelId?: string }
   | {
       type: 'close-modal'
@@ -43,7 +46,7 @@ type Action =
 type State = {
   scalarFieldForm: {
     isVisible: boolean
-    field: ScalarField | ListField | FieldSkeleton
+    field: ScalarField | ListField | AssetField | FieldSkeleton
   }
   relationFieldForm: {
     isVisible: boolean
@@ -220,6 +223,11 @@ const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
                 label: 'Date',
               },
               {
+                key: SystemModel.ASSET,
+                icon: typeIcon(SystemModel.ASSET),
+                label: 'Asset',
+              },
+              {
                 key: DisplayType.JSON_EDITOR,
                 icon: typeIcon(DisplayType.JSON_EDITOR),
                 label: 'JSON',
@@ -323,7 +331,11 @@ const ModelDetail: React.FC<ModelDetailProps> = ({ branchId, modelId }) => {
                             dispatch({ type: 'delete-field', field, modelId })
                           }}
                           onEdit={field => {
-                            if (isListField(field) || isScalarField(field)) {
+                            if (
+                              isListField(field) ||
+                              isAssetField(field) ||
+                              isScalarField(field)
+                            ) {
                               dispatch({ type: 'edit-scalar-field', field })
                             }
                           }}

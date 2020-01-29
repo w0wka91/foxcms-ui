@@ -127,6 +127,7 @@ const FieldRow = React.forwardRef<HTMLDivElement, FieldRowProps>(
         <div
           className={css`
             display: flex;
+            margin-left: auto;
             width: 19.2rem;
             justify-content: space-around;
           `}

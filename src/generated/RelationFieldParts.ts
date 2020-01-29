@@ -9,13 +9,13 @@ import { RelationType, DisplayType, Concern, Constraint } from "./globalTypes";
 // ====================================================
 
 export interface RelationFieldParts_relatesTo_previewField {
-  __typename: "ScalarField" | "ListField" | "RelationField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+  __typename: "ScalarField" | "ListField" | "RelationField" | "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
 }
 
-export interface RelationFieldParts_relatesTo_fields_CreatedAtField {
-  __typename: "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+export interface RelationFieldParts_relatesTo_fields_AssetField {
+  __typename: "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
   position: number;
@@ -49,7 +49,7 @@ export interface RelationFieldParts_relatesTo_fields_RelationField {
   relationType: RelationType;
 }
 
-export type RelationFieldParts_relatesTo_fields = RelationFieldParts_relatesTo_fields_CreatedAtField | RelationFieldParts_relatesTo_fields_ScalarField | RelationFieldParts_relatesTo_fields_ListField | RelationFieldParts_relatesTo_fields_RelationField;
+export type RelationFieldParts_relatesTo_fields = RelationFieldParts_relatesTo_fields_AssetField | RelationFieldParts_relatesTo_fields_ScalarField | RelationFieldParts_relatesTo_fields_ListField | RelationFieldParts_relatesTo_fields_RelationField;
 
 export interface RelationFieldParts_relatesTo {
   __typename: "ContentModel";

@@ -9,7 +9,7 @@ import { DisplayType, Concern, Constraint, RelationType } from "./globalTypes";
 // ====================================================
 
 export interface ContentModel_contentModel_previewField {
-  __typename: "ScalarField" | "ListField" | "RelationField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+  __typename: "ScalarField" | "ListField" | "RelationField" | "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
 }
@@ -41,14 +41,23 @@ export interface ContentModel_contentModel_fields_ListField {
   type: DisplayType;
 }
 
+export interface ContentModel_contentModel_fields_AssetField {
+  __typename: "AssetField";
+  name: string;
+  apiName: string;
+  position: number;
+  id: string;
+  concern: Concern;
+}
+
 export interface ContentModel_contentModel_fields_RelationField_relatesTo_previewField {
-  __typename: "ScalarField" | "ListField" | "RelationField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+  __typename: "ScalarField" | "ListField" | "RelationField" | "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
 }
 
-export interface ContentModel_contentModel_fields_RelationField_relatesTo_fields_CreatedAtField {
-  __typename: "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+export interface ContentModel_contentModel_fields_RelationField_relatesTo_fields_AssetField {
+  __typename: "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
   position: number;
@@ -82,7 +91,7 @@ export interface ContentModel_contentModel_fields_RelationField_relatesTo_fields
   relationType: RelationType;
 }
 
-export type ContentModel_contentModel_fields_RelationField_relatesTo_fields = ContentModel_contentModel_fields_RelationField_relatesTo_fields_CreatedAtField | ContentModel_contentModel_fields_RelationField_relatesTo_fields_ScalarField | ContentModel_contentModel_fields_RelationField_relatesTo_fields_ListField | ContentModel_contentModel_fields_RelationField_relatesTo_fields_RelationField;
+export type ContentModel_contentModel_fields_RelationField_relatesTo_fields = ContentModel_contentModel_fields_RelationField_relatesTo_fields_AssetField | ContentModel_contentModel_fields_RelationField_relatesTo_fields_ScalarField | ContentModel_contentModel_fields_RelationField_relatesTo_fields_ListField | ContentModel_contentModel_fields_RelationField_relatesTo_fields_RelationField;
 
 export interface ContentModel_contentModel_fields_RelationField_relatesTo {
   __typename: "ContentModel";
@@ -103,7 +112,7 @@ export interface ContentModel_contentModel_fields_RelationField {
   relatesTo: ContentModel_contentModel_fields_RelationField_relatesTo;
 }
 
-export type ContentModel_contentModel_fields = ContentModel_contentModel_fields_CreatedAtField | ContentModel_contentModel_fields_ScalarField | ContentModel_contentModel_fields_ListField | ContentModel_contentModel_fields_RelationField;
+export type ContentModel_contentModel_fields = ContentModel_contentModel_fields_CreatedAtField | ContentModel_contentModel_fields_ScalarField | ContentModel_contentModel_fields_ListField | ContentModel_contentModel_fields_AssetField | ContentModel_contentModel_fields_RelationField;
 
 export interface ContentModel_contentModel {
   __typename: "ContentModel";

@@ -8,10 +8,10 @@ import { useForm, Controller } from 'react-hook-form'
 import snakeCase from 'lodash.snakecase'
 import { Button, Input, Modal, Toggle } from 'react-atomicus'
 import { css } from 'emotion'
-import { typeName } from './field-utils'
+import { fieldTypeName } from './field-utils'
 import { useMutation } from '@apollo/react-hooks'
 import { CONTENT_MODEL } from '../../gql/queries'
-import { ADD_SCALAR_FIELD } from '../../gql/mutations'
+import { ADD_SCALAR_FIELD, ADD_ASSET_FIELD } from '../../gql/mutations'
 import {
   FieldSkeleton,
   isFieldSkeleton,
@@ -19,13 +19,16 @@ import {
   isScalarField,
   ListField,
   ScalarField,
+  AssetField,
+  isAssetField,
+  SystemModel,
 } from '../../types/foxcms.global'
 
 interface ScalarFieldDialogProps {
   contentModel: ContentModel_contentModel
   isOpen: boolean
   onClose: () => void
-  field: ScalarField | ListField | FieldSkeleton
+  field: ScalarField | ListField | AssetField | FieldSkeleton
 }
 
 interface FormData {
@@ -49,7 +52,6 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
         query: CONTENT_MODEL,
         variables: { modelId: contentModel.id },
       })
-      console.log('update', data)
       const fields = data?.contentModel?.fields?.concat(addScalarField)
       cache.writeQuery({
         query: CONTENT_MODEL,
@@ -58,7 +60,20 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
       })
     },
   })
-
+  const [addAssetField] = useMutation(ADD_ASSET_FIELD, {
+    update(cache, { data: { addAssetField } }) {
+      const data = cache.readQuery<ContentModel>({
+        query: CONTENT_MODEL,
+        variables: { modelId: contentModel.id },
+      })
+      const fields = data?.contentModel?.fields?.concat(addAssetField)
+      cache.writeQuery({
+        query: CONTENT_MODEL,
+        variables: { modelId: contentModel.id },
+        data: { contentModel: { ...data?.contentModel, fields } },
+      })
+    },
+  })
   const { register, handleSubmit, setValue, errors, reset, control } = useForm<
     FormData
   >({
@@ -69,13 +84,14 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
     },
   })
   useEffect(() => {
-    if (isScalarField(field) || isListField(field)) {
+    if (!isFieldSkeleton(field)) {
       setValue('name', field?.name)
       setValue('apiName', field?.apiName)
       setValue('list', isListField(field))
       setValue(
         'required',
-        isScalarField(field) && field.concern === Concern.REQUIRED
+        (isScalarField(field) || isAssetField(field)) &&
+          field.concern === Concern.REQUIRED
       )
       setValue(
         'unique',
@@ -88,16 +104,27 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
 
   const onSubmit = async (data: any) => {
     if (isFieldSkeleton(field)) {
-      await addScalarField({
-        variables: {
-          modelId: contentModel.id,
-          fieldName: data.name,
-          apiName: data.apiName,
-          displayType: field.type,
-          concern: data.required ? Concern.REQUIRED : Concern.OPTIONAL,
-          constraint: data.unique ? Constraint.UNIQUE : Constraint.NONE,
-        },
-      })
+      if (field.type === SystemModel.ASSET) {
+        await addAssetField({
+          variables: {
+            modelId: contentModel.id,
+            fieldName: data.name,
+            apiName: data.apiName,
+            concern: data.required ? Concern.REQUIRED : Concern.OPTIONAL,
+          },
+        })
+      } else {
+        await addScalarField({
+          variables: {
+            modelId: contentModel.id,
+            fieldName: data.name,
+            apiName: data.apiName,
+            displayType: field.type,
+            concern: data.required ? Concern.REQUIRED : Concern.OPTIONAL,
+            constraint: data.unique ? Constraint.UNIQUE : Constraint.NONE,
+          },
+        })
+      }
       onClose()
       reset()
     } else {
@@ -120,7 +147,7 @@ const ScalarFieldModal: React.FC<ScalarFieldDialogProps> = ({
         width: 50rem;
       `}
     >
-      <Modal.Header>{`${action} ${typeName(field.type)}`} field</Modal.Header>
+      <Modal.Header>{`${action} ${fieldTypeName(field)}`} field</Modal.Header>
       <Modal.Content>
         <form
           id="scalar-field-form"

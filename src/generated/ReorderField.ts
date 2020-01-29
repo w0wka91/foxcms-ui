@@ -9,7 +9,7 @@ import { DisplayType, Concern, Constraint, RelationType } from "./globalTypes";
 // ====================================================
 
 export interface ReorderField_reorderField_previewField {
-  __typename: "ScalarField" | "ListField" | "RelationField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+  __typename: "ScalarField" | "ListField" | "RelationField" | "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
 }
@@ -41,14 +41,23 @@ export interface ReorderField_reorderField_fields_ListField {
   type: DisplayType;
 }
 
+export interface ReorderField_reorderField_fields_AssetField {
+  __typename: "AssetField";
+  name: string;
+  apiName: string;
+  position: number;
+  id: string;
+  concern: Concern;
+}
+
 export interface ReorderField_reorderField_fields_RelationField_relatesTo_previewField {
-  __typename: "ScalarField" | "ListField" | "RelationField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+  __typename: "ScalarField" | "ListField" | "RelationField" | "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
 }
 
-export interface ReorderField_reorderField_fields_RelationField_relatesTo_fields_CreatedAtField {
-  __typename: "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
+export interface ReorderField_reorderField_fields_RelationField_relatesTo_fields_AssetField {
+  __typename: "AssetField" | "CreatedAtField" | "IdField" | "PublishStatusField" | "UpdatedAtField";
   name: string;
   apiName: string;
   position: number;
@@ -82,7 +91,7 @@ export interface ReorderField_reorderField_fields_RelationField_relatesTo_fields
   relationType: RelationType;
 }
 
-export type ReorderField_reorderField_fields_RelationField_relatesTo_fields = ReorderField_reorderField_fields_RelationField_relatesTo_fields_CreatedAtField | ReorderField_reorderField_fields_RelationField_relatesTo_fields_ScalarField | ReorderField_reorderField_fields_RelationField_relatesTo_fields_ListField | ReorderField_reorderField_fields_RelationField_relatesTo_fields_RelationField;
+export type ReorderField_reorderField_fields_RelationField_relatesTo_fields = ReorderField_reorderField_fields_RelationField_relatesTo_fields_AssetField | ReorderField_reorderField_fields_RelationField_relatesTo_fields_ScalarField | ReorderField_reorderField_fields_RelationField_relatesTo_fields_ListField | ReorderField_reorderField_fields_RelationField_relatesTo_fields_RelationField;
 
 export interface ReorderField_reorderField_fields_RelationField_relatesTo {
   __typename: "ContentModel";
@@ -103,7 +112,7 @@ export interface ReorderField_reorderField_fields_RelationField {
   relatesTo: ReorderField_reorderField_fields_RelationField_relatesTo;
 }
 
-export type ReorderField_reorderField_fields = ReorderField_reorderField_fields_CreatedAtField | ReorderField_reorderField_fields_ScalarField | ReorderField_reorderField_fields_ListField | ReorderField_reorderField_fields_RelationField;
+export type ReorderField_reorderField_fields = ReorderField_reorderField_fields_CreatedAtField | ReorderField_reorderField_fields_ScalarField | ReorderField_reorderField_fields_ListField | ReorderField_reorderField_fields_AssetField | ReorderField_reorderField_fields_RelationField;
 
 export interface ReorderField_reorderField {
   __typename: "ContentModel";

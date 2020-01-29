@@ -3,6 +3,7 @@ import {
   SCALAR_FIELD_FRAGMENT,
   RELATION_FIELD_FRAGMENT,
   CONTENT_MODEL_FRAGMENT,
+  ASSET_FIELD_FRAGMENT,
 } from './fragments'
 
 const ADD_CONTENT_MODEL = gql`
@@ -85,6 +86,29 @@ const ADD_RELATION_FIELD = gql`
   ${RELATION_FIELD_FRAGMENT}
 `
 
+const ADD_ASSET_FIELD = gql`
+  mutation AddAssetField(
+    $modelId: ID!
+    $fieldName: String!
+    $apiName: String!
+    $concern: Concern!
+  ) {
+    addAssetField(
+      input: {
+        modelId: $modelId
+        fieldName: $fieldName
+        apiName: $apiName
+        concern: $concern
+      }
+    ) {
+      ... on AssetField {
+        ...AssetFieldParts
+      }
+    }
+  }
+  ${ASSET_FIELD_FRAGMENT}
+`
+
 const DELETE_FIELD = gql`
   mutation DeleteField($modelId: ID!, $fieldId: ID!) {
     deleteField(modelId: $modelId, id: $fieldId) {
@@ -105,6 +129,7 @@ const REORDER_FIELD = gql`
 
 export {
   ADD_SCALAR_FIELD,
+  ADD_ASSET_FIELD,
   DELETE_FIELD,
   ADD_RELATION_FIELD,
   ADD_CONTENT_MODEL,
